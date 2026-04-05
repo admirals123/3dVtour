@@ -1,3 +1,78 @@
+/* Banner video adjustments */
+/* Banner as full background video */
+/* Banner video adjustments */
+/* Banner as full background video */
+
+/* Logo styles */
+.header-logo {
+	height: 40px;
+	width: auto;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+.footer-brand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 1em;
+}
+.footer-logo {
+	height: 80px;
+	width: auto;
+}
+.footer-brand h2 {
+	margin: 0;
+}
+
+.banner-overlay {
+	position: relative;
+	z-index: 2;
+	width: 100vw;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	pointer-events: none;
+	margin-top: -55px; /* Move overlay a bit higher */
+}
+.banner-overlay #header {
+	width: 75vw;
+	background: rgba(0,0,0,0.35);
+	pointer-events: auto;
+}
+.banner-title {
+	position: absolute;
+	top: 35%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #fff;
+	text-shadow: 2px 2px 8px #000;
+	width: 100vw;
+	text-align: center;
+	font-size: 2.35em;
+	font-weight: 700;
+	z-index: 3;
+	pointer-events: auto;
+}
+#banner {
+	position: relative;
+	width: 75vw;
+	height: 100vh;
+	max-height: 100vh;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+#banner video#header-video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 75vw;
+	height: 100vh;
+	object-fit: contain;
+	z-index: 1;
+}
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,800");
 @import url("fontawesome-all.min.css");
 
@@ -1793,18 +1868,50 @@ input, select, textarea {
 
 /* Banner */
 
+	/* Responsive banner with video background */
 	#banner {
+		position: relative;
 		text-align: center;
-		width: 940px;
-		margin: 0 auto;
+		width: 100vw;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
 		overflow: hidden;
 		padding: 9em 0 6em 0;
+		min-height: 350px;
+		height: 40vw;
+		max-height: 5000px;
+		box-sizing: border-box;
 	}
 
+	#banner video#header-video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		z-index: 1;
+	}
+
+	#banner h2 {
+		position: relative;
+		z-index: 2;
+		color: #fcf9f9;
+		text-shadow: 2px 2px 8px #000;
+		width: 100%;
+		text-align: center;
+		margin: 0;
+		padding-top: 4em;
+		padding-bottom: 2em;
+		font-size: 2.35em;
+		font-weight: 700;
+	}
+	
+
 		#banner h2 {
-			border: solid 1px rgba(255, 255, 255, 0.25);
-			border-left: 0;
-			border-right: 0;
+			border: none;
 			color: #fff;
 			color: rgba(255, 255, 255, 0.75);
 			font-size: 2.35em;
@@ -1822,18 +1929,24 @@ input, select, textarea {
 				content: '';
 				display: block;
 				border-top: solid 1px;
+				border-bottom: solid 1px;
 				border-color: #888;
 				border-color: rgba(255, 255, 255, 0.25);
-				margin: 10px 0 1.25em 0;
+				width: 60%;
+				height: 10px;
+				margin: 0 auto 1.25em auto;
 			}
 
 			#banner h2:after {
 				content: '';
 				display: block;
+				border-top: solid 1px;
 				border-bottom: solid 1px;
 				border-color: #888;
 				border-color: rgba(255, 255, 255, 0.25);
-				margin: 1.25em 0 10px 0;
+				width: 60%;
+				height: 10px;
+				margin: 1.25em auto 0 auto;
 			}
 
 		#banner p {
