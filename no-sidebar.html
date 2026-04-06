@@ -46,9 +46,10 @@
 														<li><a href="#">Veroeros feugiat</a></li>
 													</ul>
 												</li>
-												<li><a href="left-sidebar.html">Left Sidebar</a></li>
-												<li><a href="right-sidebar.html">Right Sidebar</a></li>
-												<li class="current_page_item"><a href="no-sidebar.html">No Sidebar</a></li>
+<li><a href="left-sidebar.html" data-i18n="tpl-nav-left-sidebar">Left Sidebar</a></li>
+										<li><a href="right-sidebar.html" data-i18n="tpl-nav-right-sidebar">Right Sidebar</a></li>
+										<li class="current_page_item"><a href="no-sidebar.html" data-i18n="tpl-nav-no-sidebar">No Sidebar</a></li>
+										<li><a href="javascript:void(0)" id="lang-toggle" onclick="toggleLanguage()">EN</a></li>
 											</ul>
 										</nav>
 
@@ -69,9 +70,8 @@
 
 										<article>
 											<header class="major">
-												<h2>No Sidebar</h2>
-												<p>Sidebars are not welcome here</p>
-											</header>
+											<h2 data-i18n="tpl-no-title">No Sidebar</h2>
+											<p data-i18n="tpl-no-subtitle">Sidebars are not welcome here</p>
 
 											<span class="image featured"><img src="images/pic08.jpg" alt="" /></span>
 
@@ -124,7 +124,7 @@
 
 										<!-- Article list -->
 											<section class="box article-list">
-												<h2 class="icon fa-file-alt">Recent Posts</h2>
+												<h2 class="icon fa-file-alt" data-i18n="tpl-recent-posts">Recent Posts</h2>
 
 												<!-- Excerpt -->
 													<article class="box excerpt">
@@ -174,7 +174,7 @@
 
 										<!-- Spotlight -->
 											<section class="box spotlight">
-												<h2 class="icon fa-file-alt">Spotlight</h2>
+												<h2 class="icon fa-file-alt" data-i18n="tpl-spotlight">Spotlight</h2>
 												<article>
 													<a href="#" class="image featured"><img src="images/pic07.jpg" alt=""></a>
 													<header>
@@ -317,6 +317,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="assets/js/lang.js"></script>
 
 	</body>
 </html>

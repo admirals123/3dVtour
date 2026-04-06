@@ -2550,4 +2550,25 @@ input, select, textarea {
 				padding: 3em 0 1em 0;
 			}
 
+/* Language Toggle */
+
+	#lang-toggle {
+		cursor: pointer;
+		background: rgba(255, 255, 255, 0.15);
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		border-radius: 4px;
+		padding: 0.3em 0.8em !important;
+		font-weight: 800;
+		font-size: 0.85em;
+		letter-spacing: 0.05em;
+		transition: background 0.2s ease;
+		display: inline-block;
+		min-width: 2.5em;
+		text-align: center;
+	}
+
+	#lang-toggle:hover {
+		background: rgba(255, 255, 255, 0.3);
+	}
+
 	}
