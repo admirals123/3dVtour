@@ -1,332 +1,757 @@
-<!DOCTYPE HTML>
-<!--
-	ZeroFour by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<!-- <title>ZeroFour by HTML5 UP</title> -->
-		<!-- <meta charset="utf-8" /> -->
-		<!-- <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" /> -->
-		<link rel="stylesheet" href="assets/css/main.css" />
-	</head>
-	<body class="homepage is-preload">
-		<div id="page-wrapper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>3D Virtual's — Discover Immersive Tours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --white: #ffffff;
+    --off-white: #e8e4df;
+    --muted: #888;
+    --muted2: #555;
+    --accent: #00b4ff;
+    --accent2: #0066ff;
+    --sans: 'Figtree', sans-serif;
+    --serif: 'Playfair Display', Georgia, serif;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: var(--sans); overflow-x: hidden; }
 
-			<!-- Header -->
-				<!-- <div id="header-wrapper"> -->
-					<!-- <div class="container"> -->
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 64px;
+    background: rgba(10,10,10,0.88); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--white);
+    font-size: 1.05rem; font-weight: 600;
+  }
+  .nav-logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: #fff;
+  }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    display: block; padding: 8px 14px; font-size: 0.85rem; color: var(--muted);
+    text-decoration: none; border-radius: 8px; transition: background 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-btn {
+    font-size: 0.82rem; font-weight: 500; font-family: var(--sans);
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .nav-btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--off-white); }
+  .nav-btn-ghost:hover { background: rgba(255,255,255,0.08); }
+  .nav-btn-primary { background: linear-gradient(135deg, var(--accent2), var(--accent)); border: none; color: #fff; }
+  .nav-btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
 
-						<!-- Banner as background video from top -->
-						<div id="banner">
-							<video id="header-video" autoplay muted loop playsinline>
-								<source src="images/banner-video.mp4" type="video/mp4">
-								Your browser does not support the video tag.
-							</video>
-							<div class="banner-overlay">
-								<header id="header">
-									<div class="inner">
-										<!-- Logo -->
-										<h1><a href="index.html" id="logo">3D Virtual's</a></h1>
-										<!-- Nav -->
-										<nav id="nav">
-											<ul>
-												<li class="current_page_item"><a href="index.html" data-i18n="nav-home">Home</a></li>
-												<li><a href="#services" data-i18n="nav-services">Services</a></li>
-												<li><a href="#technology" data-i18n="nav-technology">Technology</a></li>
-												<!-- <li><a href="#portfolio">Portfolio</a></li> -->
-												<!-- <li><a href="#pricing">Pricing</a></li> -->
-												<li><a href="#contact" data-i18n="nav-contact">Contact</a></li>
-												<li><a href="javascript:void(0)" id="lang-toggle" onclick="toggleLanguage()">EN</a></li>
-											</ul>
-										</nav>
-									</div>
-								</header>
-								<h2 class="banner-title" data-i18n="banner-title">
-									<strong>3D Virtual's:</strong> Virtual Tour for real estate
-								</h2>
-							</div>
-						</div>
+  /* HERO */
+  .hero {
+    position: relative; height: 100vh; min-height: 620px;
+    display: flex; align-items: flex-end; overflow: hidden;
+  }
+  .hero-embed { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-embed iframe { width: 100%; height: 100%; border: none; pointer-events: none; transform: scale(1.04); }
+  .hero-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.45) 40%, rgba(10,10,10,0.12) 70%, transparent 100%),
+      linear-gradient(to right, rgba(10,10,10,0.65) 0%, transparent 55%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 60px 80px; max-width: 680px;
+  }
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,180,255,0.14); border: 1px solid rgba(0,180,255,0.28);
+    border-radius: 100px; padding: 5px 14px 5px 8px;
+    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; color: var(--accent);
+    margin-bottom: 22px; opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+  }
+  .hero-chip-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  .hero-title {
+    font-family: var(--serif); font-size: clamp(2.8rem, 5.5vw, 5rem);
+    font-weight: 700; line-height: 1.08; letter-spacing: -0.02em;
+    margin-bottom: 20px; opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem; font-weight: 300; color: rgba(255,255,255,0.7);
+    line-height: 1.65; margin-bottom: 36px;
+    opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+  }
+  .hero-actions {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.7s 0.7s forwards;
+  }
+  .btn-lg {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--sans); font-size: 0.88rem; font-weight: 500;
+    padding: 13px 26px; border-radius: 10px;
+    text-decoration: none; cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-blue { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; }
+  .btn-blue:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,102,255,0.35); }
+  .btn-ghost {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    color: var(--white); backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+  .hero-scroll {
+    position: absolute; bottom: 80px; right: 60px; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeIn 1s 1.2s forwards;
+  }
+  .hero-scroll span { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .scroll-arrow {
+    width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); animation: bounce 2s infinite;
+  }
 
-					<!-- </div> -->
-				<!-- </div> -->
+  /* SECTIONS */
+  .section { padding: 80px 60px; }
+  .section-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap; margin-bottom: 36px;
+  }
+  .section-row h2 {
+    font-family: var(--serif); font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 700; letter-spacing: -0.02em;
+  }
+  .section-row h2 em { font-style: italic; color: var(--accent); }
+  .section-header { margin-bottom: 52px; }
+  .section-header h2 {
+    font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 12px;
+  }
+  .section-header h2 em { font-style: italic; color: var(--accent); }
+  .section-header p { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 560px; }
+  .view-all {
+    font-size: 0.82rem; font-weight: 500; color: var(--accent);
+    text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap 0.2s;
+  }
+  .view-all:hover { gap: 10px; }
 
-			<!-- Main Wrapper -->
-				<div id="main-wrapper">
-					<div class="wrapper style1">
-						<div class="inner">
+  /* TOUR CARDS */
+  .tour-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+  }
+  .tour-card {
+    border-radius: 12px; overflow: hidden; background: var(--surface);
+    cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .tour-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.6); }
+  .tour-thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--surface2); position: relative; overflow: hidden;
+  }
+  .tour-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s, filter 0.4s; filter: brightness(0.82);
+  }
+  .tour-card:hover .tour-thumb img { transform: scale(1.05); filter: brightness(1); }
+  .tour-play {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .tour-card:hover .tour-play { opacity: 1; }
+  .tour-play-btn {
+    width: 52px; height: 52px; background: rgba(255,255,255,0.92);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: #0a0a0a; font-size: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .tour-badge {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(0,102,255,0.88); color: #fff;
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .tour-info { padding: 16px; }
+  .tour-name { font-size: 0.92rem; font-weight: 500; margin-bottom: 4px; }
+  .tour-meta { font-size: 0.78rem; color: var(--muted); }
 
-						<!-- Services Section -->
-							<section id="services" class="container box feature1">
-									<div class="row">
-										<div class="col-12">
-											<header class="first major">
-											<h2 data-i18n="services-title">OUR SERVICES</h2>
-											<p data-i18n="services-subtitle">Complete 3D imaging solutions for real estate professionals</p>
-											</header>
-										</div>
-									<div class="col-6 col-12-medium">
-										<section>
-											<div class="image featured" style="pointer-events: auto;">
-												<iframe src="https://my.matterport.com/show/?m=HxS57vedBSy" width="100%" height="300" frameborder="0" allowfullscreen allow="xr-spatial-tracking" style="position: relative; z-index: 2; border-radius: 8px;"></iframe>
-											</div>
-											<header class="second icon solid fa-home">
-												<h3 data-i18n="service-commercial-title">COMMERCIAL DIGITAL TWINS</h3>
-											</header>
-											<p data-i18n="service-commercial-desc">Retail, office, and amenity space mapping. Enterprise-grade 3D documentation for commercial spaces. Perfect for property managers and facility planning.</p>
-											</section>
-										</div>
-									<div class="col-6 col-12-medium">
-										<section>
-											<div class="image featured" style="pointer-events: auto;">
-												<iframe src="https://www.google.com/maps/embed?pb=!4v1712200000000!6m8!1m7!1spN89eRFN2SMyoJ9F3kXBBw!2m2!1d45.5071141!2d-73.5630714!3f220.1!4f-14.47!5f0.7820865974627469" width="100%" height="300" frameborder="0" allowfullscreen style="position: relative; z-index: 2; border-radius: 8px;"></iframe>
-											</div>
-											<header class="second icon solid fa-map-marker-alt">
-												<h3 data-i18n="service-gsv-title">GOOGLE STREET VIEW INTEGRATION</h3>
-											</header>
-											<p data-i18n="service-gsv-desc">One-click publishing to Google Maps. Boost local SEO and discoverability. Your virtual tours appear directly on Google Maps and Search results.</p>
-										</section>
-										</div>
-									<div class="col-6 col-12-medium">
-										<section>
-											<a href="#" class="image featured"><img src="images/pic03.jpg" alt="Schematic Floor Plans" /></a>
-											<header class="second icon solid fa-ruler-combined">
-												<h3 data-i18n="service-floor-title">SCHEMATIC FLOOR PLANS</h3>
-											</header>
-											<p data-i18n="service-floor-desc">99% accurate black-and-white floor plans generated from 3D data. AI-powered precision for accurate square footage. Professional architectural-style documentation.</p>
-											</section>
-										</div>
-									<div class="col-6 col-12-medium">
-										<section>
-											<div class="image featured" style="pointer-events: auto;">
-												<iframe src="https://my.matterport.com/show/?m=VPj7GyeiF5e" width="100%" height="300" frameborder="0" allowfullscreen allow="xr-spatial-tracking" style="position: relative; z-index: 2; border-radius: 8px;"></iframe>
-											</div>
-											<header class="second icon solid fa-building">
-												<h3 data-i18n="service-residential-title">RESIDENTIAL TOURS</h3>
-											</header>
-											<p data-i18n="service-residential-desc">3D walkthroughs for condos and houses. Showcase properties with immersive 8K Matterport tours. Engage potential buyers with interactive floor plans and high-resolution imagery.</p>
-											</section>
-										</div>
-									</div>
-								</section>
+  /* STATS */
+  .stats-row {
+    background: #0d0d0d; display: grid; grid-template-columns: repeat(4,1fr);
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .stat-cell { padding: 52px 48px; border-right: 1px solid var(--border); text-align: center; }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--serif); font-size: 3rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 
-						</div>
-					</div>
-					<div class="wrapper style2">
-						<div class="inner">
+  /* SERVICES */
+  #services { background: var(--surface); }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 2px; }
+  .service-tile {
+    background: var(--bg); padding: 44px 36px;
+    position: relative; transition: background 0.3s;
+  }
+  .service-tile:first-child { border-radius: 12px 0 0 12px; }
+  .service-tile:last-child { border-radius: 0 12px 12px 0; }
+  .service-tile:hover { background: #111; }
+  .service-tile::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.35s;
+  }
+  .service-tile:hover::after { transform: scaleX(1); }
+  .st-num { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 24px; opacity: 0.6; }
+  .st-icon { margin-bottom: 20px; color: var(--accent); }
+  .st-icon svg { width: 36px; height: 36px; }
+  .st-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; }
+  .st-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
 
-							<!-- Technology Section -->
-								<section id="technology" class="container box feature2">
-									<div class="row">
-										<div class="col-12">
-											<header class="first major">
-												<h2 data-i18n="tech-title">THE 3D VISUALS TECHNOLOGY ADVANTAGE</h2>
-												<p data-i18n="tech-subtitle">State-of-the-art imaging technology for Montreal real estate</p>
-											</header>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-6 col-12-medium">
-											<section>
-												<header class="major">
-													<h2 data-i18n="tech-8k-title">8K RESOLUTION</h2>
-												</header>
-												<p data-i18n="tech-8k-desc">Crystal-clear 8K Matterport digital twins provide unparalleled clarity and detail. Every corner, texture, and feature is captured with professional-grade precision for an immersive viewing experience.</p>
-											</section>
-										</div>
-										<div class="col-6 col-12-medium">
-											<section>
-												<header class="major">
-													<h2 data-i18n="tech-privacy-title">AI-POWERED PRIVACY</h2>
-												</header>
-												<p data-i18n="tech-privacy-desc">Advanced face blurring technology automatically protects occupant privacy. GDPR and privacy-compliant imaging ensures your properties shine without privacy concerns.</p>
-											</section>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-6 col-12-medium">
-											<section>
-												<header class="major">
-													<h2 data-i18n="tech-dollhouse-title">DOLLHOUSE 3D VIEWING</h2>
-												</header>
-												<p data-i18n="tech-dollhouse-desc">Interactive dollhouse perspective allows viewers to explore properties from a bird's-eye view. Understand spatial relationships and flow instantly—a competitive advantage for engaging buyers.</p>
-											</section>
-										</div>
-										<div class="col-6 col-12-medium">
-											<section>
-												<header class="major">
-													<h2 data-i18n="tech-insta360-title">INSTA360 X5 HARDWARE</h2>
-												</header>
-												<p data-i18n="tech-insta360-desc">Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport processing, delivers unmatched virtual tour quality in Montreal market.</p>
-											</section>
-										</div>
-									</div>
-									<!-- <div class="row">
-										<div class="col-12">
-											<footer style="text-align: center; margin-top: 2em;">
-												<a href="#portfolio" class="button medium icon solid fa-camera">EXPLORE OUR PORTFOLIO</a>
-											</footer>
-										</div>
-									</div> -->
-								</section>
+  /* FEATURE STRIP */
+  .feature-section { display: grid; grid-template-columns: 1fr 1fr; min-height: 520px; }
+  .feature-visual { position: relative; overflow: hidden; }
+  .feature-visual img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: brightness(0.6) saturate(0.8); transition: transform 0.6s;
+  }
+  .feature-section:hover .feature-visual img { transform: scale(1.03); }
+  .feature-visual-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,66,255,0.18) 0%, transparent 60%);
+  }
+  .feature-label-pill {
+    position: absolute; top: 24px; left: 24px;
+    background: rgba(0,102,255,0.9); color: #fff;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 100px;
+  }
+  .feature-body {
+    background: var(--surface); padding: 72px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .tt-badge {
+    display: inline-block; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); background: rgba(0,180,255,0.1); border: 1px solid rgba(0,180,255,0.2);
+    padding: 4px 10px; border-radius: 100px; margin-bottom: 16px;
+  }
+  .feature-body h2 {
+    font-family: var(--serif); font-size: clamp(1.8rem, 2.8vw, 2.4rem); font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px;
+  }
+  .feature-body h2 em { font-style: italic; color: var(--accent); }
+  .feature-body p { font-size: 0.92rem; color: var(--muted); line-height: 1.75; margin-bottom: 10px; }
+  .feature-list { list-style: none; margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+  .feature-list li {
+    font-size: 0.86rem; color: var(--off-white); display: flex; align-items: center; gap: 12px;
+  }
+  .feature-list li::before {
+    content: '✓'; width: 20px; height: 20px; flex-shrink: 0;
+    background: rgba(0,180,255,0.12); border: 1px solid rgba(0,180,255,0.28);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; color: var(--accent);
+  }
 
-							</div>
-					</div>
+  /* TECHNOLOGY */
+  #technology { background: var(--bg); }
+  .tech-bento {
+    display: grid; grid-template-columns: repeat(12,1fr); gap: 12px;
+  }
+  .tech-tile {
+    background: var(--surface); border-radius: 14px; padding: 36px 32px;
+    border: 1px solid var(--border); transition: border-color 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .tech-tile:hover { border-color: rgba(0,180,255,0.25); transform: translateY(-3px); }
+  .tech-tile::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(0,102,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .tt-a,.tt-b,.tt-c,.tt-d { grid-column: span 3; }
+  .tt-wide { grid-column: span 6; }
+  .tt-big-num {
+    font-family: var(--serif); font-size: 3.2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1; margin-bottom: 8px; letter-spacing: -0.03em;
+  }
+  .tt-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 10px; }
+  .tt-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.65; }
 
-				</div>
+  /* CONTACT */
+  #contact { background: var(--bg); }
+  .contact-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: start; }
+  .contact-left h2 {
+    font-family: var(--serif); font-size: clamp(1.8rem, 2.8vw, 2.4rem); font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 16px;
+  }
+  .contact-left h2 em { font-style: italic; color: var(--accent); }
+  .contact-left p { font-size: 0.9rem; color: var(--muted); line-height: 1.75; margin-bottom: 40px; }
+  .contact-details { display: flex; flex-direction: column; gap: 28px; }
+  .cd-item { display: flex; flex-direction: column; gap: 4px; }
+  .cd-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted2); }
+  .cd-val { font-size: 0.92rem; color: var(--off-white); text-decoration: none; transition: color 0.2s; }
+  .cd-val:hover { color: var(--accent); }
+  .quote-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px;
+  }
+  .quote-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 28px; }
+  .form-grid { display: flex; flex-direction: column; gap: 16px; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-field label {
+    display: block; font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.05em; color: var(--muted); margin-bottom: 7px;
+  }
+  .form-field input, .form-field select, .form-field textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--white); font-family: var(--sans); font-size: 0.88rem;
+    padding: 11px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(0,102,255,0.15);
+  }
+  .form-field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  }
+  .form-field option { background: #1e1e1e; }
+  .form-field textarea { resize: vertical; min-height: 90px; }
+  .form-submit {
+    width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none; border-radius: 8px; color: #fff;
+    font-family: var(--sans); font-size: 0.9rem; font-weight: 600;
+    padding: 14px; cursor: pointer; transition: opacity 0.2s, transform 0.2s; margin-top: 4px;
+  }
+  .form-submit:hover { opacity: 0.88; transform: translateY(-1px); }
 
-				<div class="wrapper style2" style="background-color: #2c3e50; pointer-events: auto;">
-					<div class="inner" style="pointer-events: auto;">
+  /* FOOTER */
+  footer { background: #060606; border-top: 1px solid var(--border); padding: 60px 60px 0; }
+  .footer-inner {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 48px; border-bottom: 1px solid var(--border);
+  }
+  .footer-brand p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; max-width: 260px; margin-top: 12px; }
+  .footer-col h4 {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted2); margin-bottom: 16px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul a { font-size: 0.84rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-col ul a:hover { color: var(--white); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 0; font-size: 0.76rem; color: var(--muted2);
+  }
 
-						<!-- Contact Section -->
-							<section id="contact" class="container" style="pointer-events: auto;">
-									<div class="row">
-										<div class="col-12">
-											<header class="first major" style="color: white; text-align: center;">
-											<h2 style="color: white;" data-i18n="contact-title">REQUEST A QUOTE</h2>
-											<p style="color: #aed6f1;" data-i18n="contact-subtitle">Get started with your 3D Virtual Tour today</p>
-											</header>
-										</div>
-									</div>
-									<div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 2em 0;"></div>
-								<div class="row" style="pointer-events: auto;">
-									<div class="col-8 col-12-medium" style="pointer-events: auto;">
-										<form method="POST" action="https://formspree.io/f/mnjoogqg" style="padding: 2em; pointer-events: auto;">
-											<div class="row" style="pointer-events: auto;">
-													<div class="col-6 col-12-small" style="pointer-events: auto;">
-													<input type="text" name="name" placeholder="Your Name" required data-i18n-placeholder="contact-name" />
-												</div>
-												<div class="col-6 col-12-small" style="pointer-events: auto;">
-													<input type="email" name="email" placeholder="Your Email" required data-i18n-placeholder="contact-email" />
-													</div>
-												</div>
-											<div class="row" style="pointer-events: auto;">
-												<div class="col-6 col-12-small" style="pointer-events: auto;">
-												<input type="tel" name="phone" placeholder="Your Phone" required style="width: 100%;" data-i18n-placeholder="contact-phone" />
-											</div>
-											<div class="col-6 col-12-small" style="pointer-events: auto;">
-													<input type="text" name="company" placeholder="Company Name" data-i18n-placeholder="contact-company" />
-													</div>
-												</div>
-												<div class="row" style="pointer-events: auto;">
-													<div class="col-12" style="pointer-events: auto;">
-														<input type="text" name="address" placeholder="Property Address" required data-i18n-placeholder="contact-address" />
-													</div>
-												</div>
-												<div class="row" style="pointer-events: auto;">
-												<div class="col-6 col-12-small" style="pointer-events: auto;">
-													<input type="text" name="sqft" placeholder="Square Footage (optional)" data-i18n-placeholder="contact-sqft" />
-												</div>
-												<div class="col-6 col-12-small" style="pointer-events: auto;">
-														<select name="service" required>
-														<option value="" data-i18n="contact-service-default">- Select Service Type -</option>
-														<option value="residential-tour" data-i18n="contact-service-residential">Residential Tour</option>
-														<option value="commercial-twin" data-i18n="contact-service-commercial">Commercial Digital Twin</option>
-														<option value="floor-plan" data-i18n="contact-service-floor">Schematic Floor Plan</option>
-														<option value="gsvintegration" data-i18n="contact-service-gsv">Google Street View Integration</option>
-														</select>
-													</div>
-												</div>
-												<div class="row" style="pointer-events: auto;">
-													<div class="col-12" style="pointer-events: auto;">
-														<textarea name="message" placeholder="Additional Details or Questions" rows="6" data-i18n-placeholder="contact-message"></textarea>
-													</div>
-												</div>
-												<footer style="text-align: left;">
-													<button type="submit" class="button" style="border-color: white; color: white;" data-i18n="contact-submit">REQUEST QUOTE</button>
-												</footer>
-											</form>
-										</div>
-										<div class="col-4 col-12-medium">
-											<div style="color: white; padding: 0 2em; text-shadow: none;">
-											<h3 style="color: white; text-transform: uppercase;" data-i18n="contact-info-title">Contact Information</h3>
-												
-												<div style="margin-bottom: 2em;">
-												<h4 style="color: white; text-transform: uppercase; margin-bottom: 0.5em;" data-i18n="contact-info-address-label">Address</h4>
-												<p style="color: white;" data-i18n="contact-info-address">6565 kildare Côte-Saint-Luc & Montreal<br>Quebec, Canada</p>
-												</div>
-												
-												<div style="margin-bottom: 2em;">
-													<h4 style="color: white; text-transform: uppercase; margin-bottom: 0.5em;" data-i18n="contact-info-phone-label">Phone</h4>
-													<p><a href="tel:+15149191875" style="color: #aed6f1; text-decoration: none;">(514) 919-1875</a></p>
-												</div>
-												
-												<div style="margin-bottom: 2em;">
-													<h4 style="color: white; text-transform: uppercase; margin-bottom: 0.5em;" data-i18n="contact-info-email-label">Email</h4>
-													<p><a href="mailto:pranabhi3dtours@gmail.com" style="color: #aed6f1; text-decoration: none;">pranabhi3dtours@gmail.com</a></p>
-												</div>
-												
-												<!-- <div>
-													<h4 style="color: white; text-transform: uppercase; margin-bottom: 0.5em;">Hours</h4>
-													<p style="color: white;">Monday - Friday: 9 AM - 6 PM<br>Saturday - By Appointment</p>
-												</div> -->
-											</div>
-										</div>
-									</div>
-								</section>
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); }
+  }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
 
-							</div>
-					</div>
+  @media (max-width: 900px) {
+    .section { padding: 60px 24px; }
+    .hero-content { padding: 0 24px 64px; }
+    .nav-links { display: none; }
+    .hero-scroll { right: 24px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .service-tile:first-child { border-radius: 12px 12px 0 0; }
+    .service-tile:last-child { border-radius: 0 0 12px 12px; }
+    .tech-bento { grid-template-columns: 1fr; }
+    .tt-a,.tt-b,.tt-c,.tt-d,.tt-wide { grid-column: span 1; }
+    .feature-section { grid-template-columns: 1fr; }
+    .feature-visual { height: 260px; }
+    .feature-body { padding: 44px 28px; }
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .contact-wrap { grid-template-columns: 1fr; gap: 40px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    footer { padding: 48px 24px 0; }
+    .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
 
-				</div>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">3D</div>
+    3D Virtual's
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="tel:+15149191875" class="nav-btn nav-btn-ghost">(514) 919-1875</a>
+    <a href="#contact" class="nav-btn nav-btn-primary">Get a Quote</a>
+  </div>
+</nav>
 
-			<!-- Footer Wrapper -->
-				<div id="footer-wrapper" style="background-color: #4a7d99;">
-					<footer id="footer" class="container">
-						<div class="row">
-							<div class="col-6 col-12-medium">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-embed">
+    <iframe
+      src="https://my.matterport.com/show/?m=SxQL3iGyvhk&brand=0&mls=1&help=0&play=1&qs=1&gt=1&hr=0&vr=0&f=0&dh=0&tour=0"
+      allowfullscreen allow="xr-spatial-tracking" title="3D Virtual Tour Preview">
+    </iframe>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-chip">
+      <div class="hero-chip-dot"></div>
+      Montreal's Premier 3D Virtual Tour Studio
+    </div>
+    <h1 class="hero-title">
+      Discover spaces<br>like you're <em>already there.</em>
+    </h1>
+    <p class="hero-sub">
+      8K Matterport digital twins for Montreal real estate. Immersive tours that engage buyers before they set foot inside.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-lg btn-blue">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l5 6-5 6M1 7h11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Request a Quote
+      </a>
+      <a href="#services" class="btn-lg btn-ghost">View Services</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-arrow">↓</div>
+  </div>
+</section>
 
-								<!-- About -->
-									<section>
-										<div class="footer-brand">
-											<img src="images/logo.png" alt="3D Virtual's Logo" class="footer-logo" />
-											<h2>3D Virtual's</h2>
-										</div>
-										<p style="color: white;" data-i18n="footer-about">Professional 3D Virtual Tours & Digital Twins for Montreal Real Estate. Serving the Montreal community with 8K Matterport imaging, Insta360 X5 technology, and AI-powered privacy solutions. We help realtors and property managers win more listings with immersive digital experiences.</p>
-										<footer>
-											<a href="#services" class="button icon solid fa-check-square" data-i18n="footer-services-btn">VIEW SERVICES</a>
-										</footer>
-									</section>
+<!-- FEATURED TOURS -->
+<section class="section" style="background:var(--bg);">
+  <div class="section-row reveal">
+    <h2>Featured <em>Spaces</em></h2>
+    <a href="#contact" class="view-all">Book your tour →</a>
+  </div>
+  <div class="tour-grid">
+    <a href="#contact" class="tour-card reveal">
+      <div class="tour-thumb">
+        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80" alt="Luxury Condo">
+        <div class="tour-play"><div class="tour-play-btn">▶</div></div>
+        <span class="tour-badge">Residential</span>
+      </div>
+      <div class="tour-info">
+        <div class="tour-name">Luxury Condo — Westmount</div>
+        <div class="tour-meta">8K Matterport · Floor Plan Included</div>
+      </div>
+    </a>
+    <a href="#contact" class="tour-card reveal">
+      <div class="tour-thumb">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80" alt="Office Space">
+        <div class="tour-play"><div class="tour-play-btn">▶</div></div>
+        <span class="tour-badge">Commercial</span>
+      </div>
+      <div class="tour-info">
+        <div class="tour-name">Corporate Office — Downtown</div>
+        <div class="tour-meta">Digital Twin · Google Street View</div>
+      </div>
+    </a>
+    <a href="#contact" class="tour-card reveal">
+      <div class="tour-thumb">
+        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80" alt="Family Home">
+        <div class="tour-play"><div class="tour-play-btn">▶</div></div>
+        <span class="tour-badge">Residential</span>
+      </div>
+      <div class="tour-info">
+        <div class="tour-name">Family Home — Côte-Saint-Luc</div>
+        <div class="tour-meta">8K Matterport · Dollhouse View</div>
+      </div>
+    </a>
+    <a href="#contact" class="tour-card reveal">
+      <div class="tour-thumb">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" alt="Commercial">
+        <div class="tour-play"><div class="tour-play-btn">▶</div></div>
+        <span class="tour-badge">Commercial</span>
+      </div>
+      <div class="tour-info">
+        <div class="tour-name">Retail Space — Laval</div>
+        <div class="tour-meta">Digital Twin · Schematic Plans</div>
+      </div>
+    </a>
+  </div>
+</section>
 
-							</div>
-							<div class="col-6 col-12-medium">
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-cell reveal"><div class="stat-num">8K</div><div class="stat-label">Matterport Resolution</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">99%</div><div class="stat-label">Floor Plan Accuracy</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">360°</div><div class="stat-label">Spherical Coverage</div></div>
+  <div class="stat-cell reveal"><div class="stat-num">24h</div><div class="stat-label">Turnaround Time</div></div>
+</div>
 
-								<!-- Links -->
-									<section>
-									<h2 data-i18n="footer-links-title">QUICK LINKS</h2>
-									<ul  class="divided">
-										<li class="current_page_item"><a href="index.html" data-i18n="footer-home">Home</a></li>
-										<li><a href="#services" data-i18n="footer-services">Our Services</a></li>
-										<li><a href="#technology" data-i18n="footer-technology">Technology Advantage</a></li>
-										<!-- <li><a href="#portfolio">Portfolio</a></li> -->
-										<!-- <li><a href="#pricing">Pricing</a></li> -->
-										<li><a href="#contact" data-i18n="footer-contact">Contact Us</a></li>
-										</ul>
-									</section>
+<!-- SERVICES -->
+<section id="services" class="section">
+  <div class="section-header reveal">
+    <h2>Complete 3D imaging solutions<br>for <em>real estate professionals</em></h2>
+    <p>From intimate condos to enterprise commercial spaces — every scan delivered with 8K precision and AI-powered technology.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-tile reveal">
+      <div class="st-num">01</div>
+      <div class="st-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3" y="3" width="30" height="30" rx="2"/>
+          <path d="M3 13h30M13 3v30"/>
+          <circle cx="22" cy="22" r="4"/>
+        </svg>
+      </div>
+      <div class="st-title">Residential Tours</div>
+      <div class="st-desc">Immersive 8K walkthroughs for condos and houses. Engage potential buyers with interactive floor plans and imagery that sells properties faster.</div>
+    </div>
+    <div class="service-tile reveal">
+      <div class="st-num">02</div>
+      <div class="st-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M3 30V12L18 4l15 8v18"/>
+          <rect x="13" y="20" width="10" height="10"/>
+        </svg>
+      </div>
+      <div class="st-title">Commercial Digital Twins</div>
+      <div class="st-desc">Enterprise-grade 3D documentation for retail, office, and amenity spaces. Precision mapping for property managers, facilities teams, and investors.</div>
+    </div>
+    <div class="service-tile reveal">
+      <div class="st-num">03</div>
+      <div class="st-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="18" cy="18" r="14"/>
+          <path d="M18 4C18 4 11 11 11 18s7 14 7 14M18 4c0 0 7 7 7 14s-7 14-7 14M4 18h28"/>
+        </svg>
+      </div>
+      <div class="st-title">Google Street View</div>
+      <div class="st-desc">One-click publishing to Google Maps. Boost local SEO — your property appears directly in Google Maps and Search results for maximum discoverability.</div>
+    </div>
+    <div class="service-tile reveal">
+      <div class="st-num">04</div>
+      <div class="st-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="4" y="4" width="28" height="28"/>
+          <path d="M4 15h28M4 25h28M15 4v28"/>
+        </svg>
+      </div>
+      <div class="st-title">Schematic Floor Plans</div>
+      <div class="st-desc">99% accurate architectural-style floor plans generated from 3D scan data. AI-powered precision for exact square footage and professional documentation.</div>
+    </div>
+  </div>
+</section>
 
-							</div>
-							<div class="col-12">
-								<div id="copyright">
-									<ul class="menu">
-									<li data-i18n="footer-copyright">&copy; 3D Visuals. All rights reserved</li><li data-i18n="footer-tagline"> Proudly serving the Montreal community. No GST/QST collected for small supplier services.</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</footer>
-				</div>
+<!-- FLOOR PLAN FEATURE -->
+<div class="feature-section">
+  <div class="feature-visual">
+    <img src="https://admirals123.github.io/3dVtour/images/pic03.jpg" alt="Schematic Floor Plan"/>
+    <div class="feature-visual-overlay"></div>
+    <span class="feature-label-pill">AI-Generated Plans</span>
+  </div>
+  <div class="feature-body">
+    <div class="tt-badge">Precision Documentation</div>
+    <h2>Architectural accuracy,<br><em>automated.</em></h2>
+    <p>Our AI pipeline transforms raw 3D scan data into publication-ready floor plans with the precision architects and property managers demand.</p>
+    <p>Every measurement verified. Every corner documented. Delivered in formats ready for MLS and marketing platforms.</p>
+    <ul class="feature-list">
+      <li>Sub-centimetre measurement accuracy</li>
+      <li>Professional architectural-style output</li>
+      <li>GDPR & privacy-compliant imaging</li>
+      <li>Compatible with MLS listing platforms</li>
+      <li>Black-and-white and colour formats</li>
+    </ul>
+  </div>
+</div>
 
-		</div>
+<!-- TECHNOLOGY -->
+<section id="technology" class="section">
+  <div class="section-header reveal">
+    <h2>The <em>technology</em> advantage</h2>
+    <p>State-of-the-art imaging technology purpose-built for Montreal real estate — delivering results that outperform every alternative.</p>
+  </div>
+  <div class="tech-bento">
+    <div class="tech-tile tt-a reveal">
+      <div class="tt-badge">Imaging</div>
+      <div class="tt-big-num">8K</div>
+      <div class="tt-title">Matterport Resolution</div>
+      <div class="tt-desc">Crystal-clear digital twins. Every texture captured with professional-grade precision for a truly immersive experience.</div>
+    </div>
+    <div class="tech-tile tt-b reveal">
+      <div class="tt-badge">Privacy</div>
+      <div class="tt-big-num">AI</div>
+      <div class="tt-title">Powered Privacy</div>
+      <div class="tt-desc">Advanced face-blurring technology — fully GDPR-compliant imaging so your properties always shine without concern.</div>
+    </div>
+    <div class="tech-tile tt-c reveal">
+      <div class="tt-badge">Viewing</div>
+      <div class="tt-big-num">3D</div>
+      <div class="tt-title">Dollhouse Mode</div>
+      <div class="tt-desc">Interactive bird's-eye perspective — buyers understand spatial flow and room relationships instantly.</div>
+    </div>
+    <div class="tech-tile tt-d reveal">
+      <div class="tt-badge">Hardware</div>
+      <div class="tt-big-num">X5</div>
+      <div class="tt-title">Insta360 Camera</div>
+      <div class="tt-desc">Professional Insta360 X5 combined with Matterport processing for unmatched virtual tour quality.</div>
+    </div>
+    <div class="tech-tile tt-wide reveal">
+      <div class="tt-badge">Integration</div>
+      <div class="tt-title" style="font-size:1.2rem;margin-bottom:12px;">Seamless Google Maps Publishing</div>
+      <div class="tt-desc">Your virtual tours appear directly on Google Maps and Search with one-click publishing. Boost local SEO, increase discoverability, and let buyers find you first — no technical setup required.</div>
+    </div>
+    <div class="tech-tile tt-wide reveal">
+      <div class="tt-badge">Coverage</div>
+      <div class="tt-title" style="font-size:1.2rem;margin-bottom:12px;">360° Spherical Capture</div>
+      <div class="tt-desc">Every corner, every angle. Full spherical imaging means no dead spots, no missed details. Buyers explore freely in every direction — a truly immersive experience that drives confident decisions.</div>
+    </div>
+  </div>
+</section>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.dropotron.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-		<script src="assets/js/lang.js"></script>
+<!-- CONTACT -->
+<section id="contact" class="section">
+  <div class="contact-wrap">
+    <div class="contact-left reveal">
+      <div class="tt-badge" style="margin-bottom:20px;">Get Started</div>
+      <h2>Start your <em>tour</em> today.</h2>
+      <p>Ready to elevate your listings? Our team serves the entire Montreal region and responds within hours. Proudly serving the community — no GST/QST collected for small supplier services.</p>
+      <div class="contact-details">
+        <div class="cd-item">
+          <span class="cd-label">Address</span>
+          <span class="cd-val">6565 Kildare, Côte-Saint-Luc & Montreal, QC</span>
+        </div>
+        <div class="cd-item">
+          <span class="cd-label">Phone</span>
+          <a href="tel:+15149191875" class="cd-val">(514) 919-1875</a>
+        </div>
+        <div class="cd-item">
+          <span class="cd-label">Email</span>
+          <a href="mailto:pranabhi3dtours@gmail.com" class="cd-val">pranabhi3dtours@gmail.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="quote-card reveal">
+      <h3>Request a Quote</h3>
+      <div class="form-grid">
+        <div class="form-row-2">
+          <div class="form-field">
+            <label>First Name</label>
+            <input type="text" placeholder="Jean">
+          </div>
+          <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" placeholder="Dupont">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" placeholder="jean@example.com">
+        </div>
+        <div class="form-field">
+          <label>Phone</label>
+          <input type="tel" placeholder="(514) 000-0000">
+        </div>
+        <div class="form-field">
+          <label>Service</label>
+          <select>
+            <option value="" disabled selected>Select a service</option>
+            <option>Residential Tour</option>
+            <option>Commercial Digital Twin</option>
+            <option>Schematic Floor Plan</option>
+            <option>Google Street View Integration</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Message</label>
+          <textarea placeholder="Tell us about your property..."></textarea>
+        </div>
+        <button class="form-submit" type="button">Send Request →</button>
+      </div>
+    </div>
+  </div>
+</section>
 
-	</body>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon">3D</div>
+        3D Virtual's
+      </a>
+      <p>Professional 3D Virtual Tours & Digital Twins for Montreal Real Estate. 8K Matterport imaging, Insta360 X5 hardware, and AI-powered privacy solutions.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#services">Our Services</a></li>
+        <li><a href="#technology">Technology</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Residential Tours</a></li>
+        <li><a href="#services">Commercial Twins</a></li>
+        <li><a href="#services">Floor Plans</a></li>
+        <li><a href="#services">Google Street View</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+15149191875">(514) 919-1875</a></li>
+        <li><a href="mailto:pranabhi3dtours@gmail.com">Email Us</a></li>
+        <li><a href="#">Côte-Saint-Luc, QC</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 3D Visuals. All rights reserved.</span>
+    <span>Proudly serving Montreal. No GST/QST for small supplier services.</span>
+  </div>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const siblings = [...e.target.parentElement.querySelectorAll('.reveal:not(.visible)')];
+        const idx = siblings.indexOf(e.target);
+        setTimeout(() => e.target.classList.add('visible'), Math.min(idx, 5) * 90);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+</script>
+</body>
 </html>
