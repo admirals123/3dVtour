@@ -301,6 +301,24 @@ section{padding:12vh 5vw;position:relative;}
   cursor:pointer;transition:transform .25s var(--ease-el),box-shadow .25s,background .3s;
 }
 .form-submit:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,97,254,.4);}
+.form-success{
+  display:none;
+  margin-top:1.1rem;
+  padding:1rem 1.25rem;
+  border-radius:12px;
+  background:rgba(18,163,84,.15);
+  border:1px solid rgba(18,163,84,.3);
+  text-align:center;
+}
+.form-success.show{display:block;animation:fadeUp .5s var(--ease-out) both;}
+.form-success-icon{font-size:1.4rem;display:block;margin-bottom:.3rem;}
+.form-success-text{font-size:.88rem;font-weight:600;color:#6ee7a0;line-height:1.5;}
+.form-success-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.25rem;font-weight:400;}
+.form-input.error,.form-select.error{border-color:#ff4d4d!important;background:rgba(255,77,77,.1)!important;}
+.field-error{font-size:.68rem;font-weight:600;color:#ff6b6b;margin-top:.35rem;display:none;letter-spacing:.02em;}
+.field-error.show{display:block;}
+.form-shake{animation:shake .4s ease-out;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
 
 /* ============================================================
    FOOTER
@@ -521,7 +539,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
           <div class="ci-icon">✉️</div>
           <div>
             <div class="ci-label" data-i18n="contact.email_lbl">Courriel</div>
-            <a href="mailto:pranabhi3dtours@gmail.com" class="ci-value">pranabhi3dtours@gmail.com</a>
+            <a href="/cdn-cgi/l/email-protection#ef9f9d8e818e8d8786dc8b9b809a9d9caf88828e8683c18c8082" class="ci-value"><span class="__cf_email__" data-cfemail="f68684979897949e9fc5928299838485b6919b979f9ad895999b">[email&#160;protected]</span></a>
           </div>
         </div>
       </div>
@@ -530,15 +548,28 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
       <div class="form-title" data-i18n="form.title">Demande de devis</div>
       <div class="form-group">
         <label class="form-label" for="f-name" data-i18n="form.name_lbl">Nom complet</label>
-        <input class="form-input" type="text" id="f-name" placeholder="Jean Tremblay" data-i18n-ph="form.name_ph" />
+        <input class="form-input" type="text" id="f-name" placeholder="Jean Tremblay" data-i18n-ph="form.name_ph" autocomplete="name" />
+        <span class="field-error" id="err-name" data-i18n-err="form.err_name">Ce champ est obligatoire.</span>
       </div>
       <div class="form-group">
         <label class="form-label" for="f-email" data-i18n="form.email_lbl">Adresse courriel</label>
-        <input class="form-input" type="email" id="f-email" placeholder="jean@immobilier.com" data-i18n-ph="form.email_ph" />
+        <input class="form-input" type="email" id="f-email" placeholder="jean@immobilier.com" data-i18n-ph="form.email_ph" autocomplete="email" />
+        <span class="field-error" id="err-email" data-i18n-err="form.err_email">Adresse courriel invalide.</span>
       </div>
       <div class="form-group">
         <label class="form-label" for="f-phone" data-i18n="form.phone_lbl">Numéro de téléphone</label>
-        <input class="form-input" type="tel" id="f-phone" placeholder="(514) 000-0000" />
+        <input class="form-input" type="tel" id="f-phone" placeholder="(514) 000-0000" autocomplete="tel" maxlength="15" inputmode="numeric" />
+        <span class="field-error" id="err-phone" data-i18n-err="form.err_phone">Ce champ est obligatoire.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-sqft" data-i18n="form.sqft_lbl">Superficie (pi²)</label>
+        <input class="form-input" type="number" id="f-sqft" placeholder="ex. 1200" min="1" inputmode="numeric" data-i18n-ph="form.sqft_ph" />
+        <span class="field-error" id="err-sqft" data-i18n-err="form.err_sqft">Veuillez entrer la superficie.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-address" data-i18n="form.addr_lbl">Adresse de la propriété</label>
+        <input class="form-input" type="text" id="f-address" placeholder="123 Rue Principale, Montréal" autocomplete="street-address" data-i18n-ph="form.addr_ph" />
+        <span class="field-error" id="err-address" data-i18n-err="form.err_addr">Ce champ est obligatoire.</span>
       </div>
       <div class="form-group">
         <label class="form-label" for="f-service" data-i18n="form.service_lbl">Type de service</label>
@@ -549,8 +580,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
           <option data-i18n="form.opt3">Plan d'étage schématique</option>
           <option data-i18n="form.opt4">Intégration Google Street View</option>
         </select>
+        <span class="field-error" id="err-service" data-i18n-err="form.err_service">Veuillez choisir un service.</span>
       </div>
       <button class="form-submit" id="form-submit" data-i18n="form.submit">Envoyer la demande →</button>
+      <div class="form-success" id="form-success">
+        <span class="form-success-icon">✅</span>
+        <div class="form-success-text" id="form-success-text">Merci ! Votre demande a été envoyée.</div>
+        <div class="form-success-sub" id="form-success-sub">Notre équipe vous contactera dans les 24 heures.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -592,153 +629,320 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
      JAVASCRIPT — zero external dependencies, no CDN
      ============================================================ -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
 (function() {
-"use strict";
+“use strict”;
 
 /* ── Translations ── */
 var T = {
-  fr: {
-    "nav.services":"Services","nav.technology":"Technologie","nav.contact":"Contact","nav.cta":"Obtenir un devis",
-    "hero.eyebrow":"Technologie Immobilière — Montréal",
-    "hero.headline":"Visitez chaque pièce <em>avant</em><br>d'arriver.",
-    "hero.sub":"Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.",
-    "hero.cta1":"Explorer nos services →","hero.cta2":"Obtenir un devis",
-    "stats.res":"Résolution Matterport","stats.acc":"Précision des plans","stats.cov":"Couverture immersive","stats.loc":"Équipe basée à Montréal",
-    "svc.label":"Ce que nous faisons","svc.h2":"Quatre façons de<br>valoriser vos espaces.",
-    "svc1.num":"01 / Résidentiel","svc1.title":"Visites Virtuelles<br>Résidentielles","svc1.body":"Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.",
-    "svc2.num":"02 / Commercial","svc2.title":"Jumeaux Numériques<br>Commerciaux","svc2.body":"Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.",
-    "svc3.num":"03 / Plans","svc3.title":"Plans d'étage<br>Schématiques","svc3.body":"Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.",
-    "svc4.num":"04 / Découverte","svc4.title":"Intégration Google<br>Street View","svc4.body":"Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.",
-    "tech.label":"La Technologie","tech.h2":"Alimenté par un<br>matériel<br>d'exception.",
-    "tech1.num":"Fonctionnalité 01","tech1.title":"Résolution 8K<br>Cristalline","tech1.body":"Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle pour une expérience vraiment immersive.",
-    "tech2.num":"Fonctionnalité 02","tech2.title":"Bouclier de<br>Confidentialité IA","tech2.body":"La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.",
-    "tech3.num":"Fonctionnalité 03","tech3.title":"Vue Dollhouse<br>en 3D","tech3.body":"La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales — un avantage pour captiver les acheteurs.",
-    "tech4.num":"Fonctionnalité 04","tech4.title":"Matériel<br>Insta360 X5","tech4.body":"L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.",
-    "quote.text":"« Chaque propriété mérite d'être vécue, pas seulement décrite. »","quote.attr":"3D Virtuals — Studio Immobilier Immersif de Montréal",
-    "contact.label":"Commencer","contact.h2":"Visitons<br>votre espace.","contact.desc":"Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.",
-    "contact.addr_lbl":"Adresse","contact.phone_lbl":"Téléphone","contact.email_lbl":"Courriel",
-    "form.title":"Demande de devis","form.name_lbl":"Nom complet","form.name_ph":"Jean Tremblay","form.email_lbl":"Adresse courriel","form.email_ph":"jean@immobilier.com","form.phone_lbl":"Numéro de téléphone","form.service_lbl":"Type de service","form.service_ph":"Choisir un service","form.opt1":"Visite résidentielle","form.opt2":"Jumeau numérique commercial","form.opt3":"Plan d'étage schématique","form.opt4":"Intégration Google Street View","form.submit":"Envoyer la demande →","form.sending":"Envoi en cours…","form.done":"✓ Demande envoyée",
-    "footer.desc":"Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.","footer.nav_title":"Navigation","footer.nav1":"Accueil","footer.nav2":"Nos services","footer.nav3":"Technologie","footer.nav4":"Nous joindre","footer.svc_title":"Services","footer.svc1":"Visites résidentielles","footer.svc2":"Jumeaux numériques","footer.svc3":"Plans d'étage","footer.svc4":"Google Street View","footer.copy":"© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.","footer.tax":"Aucune TPS / TVQ perçue — petit fournisseur"
-  },
-  en: {
-    "nav.services":"Services","nav.technology":"Technology","nav.contact":"Contact","nav.cta":"Get a Quote",
-    "hero.eyebrow":"Montreal Real Estate Technology",
-    "hero.headline":"See every room <em>before</em><br>you arrive.",
-    "hero.sub":"Professional 8K Matterport virtual tours and digital twins for real estate professionals across Montreal. Sell faster. Show smarter.",
-    "hero.cta1":"Explore Services →","hero.cta2":"Get a Quote",
-    "stats.res":"Matterport Resolution","stats.acc":"Floor Plan Accuracy","stats.cov":"Immersive Coverage","stats.loc":"Montreal-Based Team",
-    "svc.label":"What We Do","svc.h2":"Four ways to<br>showcase space.",
-    "svc1.num":"01 / Residential","svc1.title":"Residential<br>Virtual Tours","svc1.body":"Immersive 8K Matterport walkthroughs for condos and houses. Engage potential buyers with interactive floor plans and high-resolution imagery that sells.",
-    "svc2.num":"02 / Commercial","svc2.title":"Commercial<br>Digital Twins","svc2.body":"Enterprise-grade 3D documentation for retail, office, and amenity spaces. Built for property managers and facility planners who demand precision.",
-    "svc3.num":"03 / Floor Plans","svc3.title":"Schematic<br>Floor Plans","svc3.body":"AI-powered 99% accurate black-and-white floor plans from 3D scan data. Architectural-grade documentation, zero drafting time.",
-    "svc4.num":"04 / Discovery","svc4.title":"Google Street<br>View Integration","svc4.body":"One-click publishing to Google Maps. Boost local SEO — your virtual tours appear directly in Google Maps and Search results.",
-    "tech.label":"The Technology","tech.h2":"Built on<br>extraordinary<br>hardware.",
-    "tech1.num":"Feature 01","tech1.title":"8K Crystal-<br>Clear Resolution","tech1.body":"Crystal-clear 8K Matterport digital twins provide unparalleled clarity and detail. Every corner, texture, and feature captured with professional-grade precision for a truly immersive viewing experience.",
-    "tech2.num":"Feature 02","tech2.title":"AI-Powered<br>Privacy Shield","tech2.body":"Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging — built-in, not bolted-on.",
-    "tech3.num":"Feature 03","tech3.title":"Dollhouse<br>3D Viewing","tech3.body":"Interactive dollhouse perspective lets viewers explore properties from a bird's-eye view. Understand spatial relationships instantly — a competitive advantage for engaging buyers.",
-    "tech4.num":"Feature 04","tech4.title":"Insta360 X5<br>Hardware","tech4.body":"Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport's processing engine, it delivers unmatched virtual tour quality in the Montreal market.",
-    "quote.text":"\"Every property deserves to be experienced, not just described.\"","quote.attr":"3D Virtuals — Montreal's Immersive Real Estate Studio",
-    "contact.label":"Get Started","contact.h2":"Let's tour<br>your space.","contact.desc":"Request a quote and one of our imaging specialists will reach out within 24 hours. No GST / QST collected for small supplier services.",
-    "contact.addr_lbl":"Address","contact.phone_lbl":"Phone","contact.email_lbl":"Email",
-    "form.title":"Request a Quote","form.name_lbl":"Full Name","form.name_ph":"Jane Smith","form.email_lbl":"Email Address","form.email_ph":"jane@realty.com","form.phone_lbl":"Phone Number","form.service_lbl":"Service Type","form.service_ph":"Select a service","form.opt1":"Residential Tour","form.opt2":"Commercial Digital Twin","form.opt3":"Schematic Floor Plan","form.opt4":"Google Street View Integration","form.submit":"Request Quote →","form.sending":"Sending…","form.done":"✓ Quote Requested",
-    "footer.desc":"Professional 3D virtual tours and digital twins for Montreal real estate. Serving realtors and property managers with 8K Matterport imaging.","footer.nav_title":"Navigation","footer.nav1":"Home","footer.nav2":"Our Services","footer.nav3":"Technology","footer.nav4":"Contact Us","footer.svc_title":"Services","footer.svc1":"Residential Tours","footer.svc2":"Commercial Digital Twins","footer.svc3":"Floor Plans","footer.svc4":"Google Street View","footer.copy":"© 2025 3D Virtuals. All rights reserved. Proudly serving Montreal.","footer.tax":"No GST / QST collected — small supplier"
-  }
+fr: {
+“nav.services”:“Services”,“nav.technology”:“Technologie”,“nav.contact”:“Contact”,“nav.cta”:“Obtenir un devis”,
+“hero.eyebrow”:“Technologie Immobilière — Montréal”,
+“hero.headline”:“Visitez chaque pièce <em>avant</em><br>d’arriver.”,
+“hero.sub”:“Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.”,
+“hero.cta1”:“Explorer nos services →”,“hero.cta2”:“Obtenir un devis”,
+“stats.res”:“Résolution Matterport”,“stats.acc”:“Précision des plans”,“stats.cov”:“Couverture immersive”,“stats.loc”:“Équipe basée à Montréal”,
+“svc.label”:“Ce que nous faisons”,“svc.h2”:“Quatre façons de<br>valoriser vos espaces.”,
+“svc1.num”:“01 / Résidentiel”,“svc1.title”:“Visites Virtuelles<br>Résidentielles”,“svc1.body”:“Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.”,
+“svc2.num”:“02 / Commercial”,“svc2.title”:“Jumeaux Numériques<br>Commerciaux”,“svc2.body”:“Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.”,
+“svc3.num”:“03 / Plans”,“svc3.title”:“Plans d’étage<br>Schématiques”,“svc3.body”:“Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.”,
+“svc4.num”:“04 / Découverte”,“svc4.title”:“Intégration Google<br>Street View”,“svc4.body”:“Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.”,
+“tech.label”:“La Technologie”,“tech.h2”:“Alimenté par un<br>matériel<br>d’exception.”,
+“tech1.num”:“Fonctionnalité 01”,“tech1.title”:“Résolution 8K<br>Cristalline”,“tech1.body”:“Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle pour une expérience vraiment immersive.”,
+“tech2.num”:“Fonctionnalité 02”,“tech2.title”:“Bouclier de<br>Confidentialité IA”,“tech2.body”:“La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.”,
+“tech3.num”:“Fonctionnalité 03”,“tech3.title”:“Vue Dollhouse<br>en 3D”,“tech3.body”:“La perspective dollhouse interactive permet d’explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales — un avantage pour captiver les acheteurs.”,
+“tech4.num”:“Fonctionnalité 04”,“tech4.title”:“Matériel<br>Insta360 X5”,“tech4.body”:“L’Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.”,
+“quote.text”:”« Chaque propriété mérite d’être vécue, pas seulement décrite. »”,“quote.attr”:“3D Virtuals — Studio Immobilier Immersif de Montréal”,
+“contact.label”:“Commencer”,“contact.h2”:“Visitons<br>votre espace.”,“contact.desc”:“Demandez un devis et l’un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.”,
+“contact.addr_lbl”:“Adresse”,“contact.phone_lbl”:“Téléphone”,“contact.email_lbl”:“Courriel”,
+“form.title”:“Demande de devis”,“form.name_lbl”:“Nom complet”,“form.name_ph”:“Jean Tremblay”,“form.email_lbl”:“Adresse courriel”,“form.email_ph”:“jean@immobilier.com”,“form.phone_lbl”:“Numéro de téléphone”,“form.service_lbl”:“Type de service”,“form.service_ph”:“Choisir un service”,“form.opt1”:“Visite résidentielle”,“form.opt2”:“Jumeau numérique commercial”,“form.opt3”:“Plan d’étage schématique”,“form.opt4”:“Intégration Google Street View”,“form.submit”:“Envoyer la demande →”,“form.sending”:“Envoi en cours…”,“form.done”:“✓ Demande envoyée”,
+“footer.desc”:“Visites virtuelles 3D professionnelles et jumeaux numériques pour l’immobilier montréalais. Au service des courtiers avec l’imagerie Matterport 8K.”,“footer.nav_title”:“Navigation”,“footer.nav1”:“Accueil”,“footer.nav2”:“Nos services”,“footer.nav3”:“Technologie”,“footer.nav4”:“Nous joindre”,“footer.svc_title”:“Services”,“footer.svc1”:“Visites résidentielles”,“footer.svc2”:“Jumeaux numériques”,“footer.svc3”:“Plans d’étage”,“footer.svc4”:“Google Street View”,“footer.copy”:“© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.”,“footer.tax”:“Aucune TPS / TVQ perçue — petit fournisseur”,“form.err_name”:“Ce champ est obligatoire.”,“form.err_email”:“Adresse courriel invalide.”,“form.err_phone”:“Veuillez entrer un numéro à 10 chiffres.”,“form.err_service”:“Veuillez choisir un service.”,“form.sqft_lbl”:“Superficie (pi²)”,“form.sqft_ph”:“ex. 1200”,“form.err_sqft”:“Veuillez entrer la superficie.”,“form.addr_lbl”:“Adresse de la propriété”,“form.addr_ph”:“123 Rue Principale, Montréal”,“form.err_addr”:“Ce champ est obligatoire.”,“form.success_text”:“Merci ! Votre demande a été envoyée.”,“form.success_sub”:“Notre équipe vous contactera dans les 24 heures.”
+},
+en: {
+“nav.services”:“Services”,“nav.technology”:“Technology”,“nav.contact”:“Contact”,“nav.cta”:“Get a Quote”,
+“hero.eyebrow”:“Montreal Real Estate Technology”,
+“hero.headline”:“See every room <em>before</em><br>you arrive.”,
+“hero.sub”:“Professional 8K Matterport virtual tours and digital twins for real estate professionals across Montreal. Sell faster. Show smarter.”,
+“hero.cta1”:“Explore Services →”,“hero.cta2”:“Get a Quote”,
+“stats.res”:“Matterport Resolution”,“stats.acc”:“Floor Plan Accuracy”,“stats.cov”:“Immersive Coverage”,“stats.loc”:“Montreal-Based Team”,
+“svc.label”:“What We Do”,“svc.h2”:“Four ways to<br>showcase space.”,
+“svc1.num”:“01 / Residential”,“svc1.title”:“Residential<br>Virtual Tours”,“svc1.body”:“Immersive 8K Matterport walkthroughs for condos and houses. Engage potential buyers with interactive floor plans and high-resolution imagery that sells.”,
+“svc2.num”:“02 / Commercial”,“svc2.title”:“Commercial<br>Digital Twins”,“svc2.body”:“Enterprise-grade 3D documentation for retail, office, and amenity spaces. Built for property managers and facility planners who demand precision.”,
+“svc3.num”:“03 / Floor Plans”,“svc3.title”:“Schematic<br>Floor Plans”,“svc3.body”:“AI-powered 99% accurate black-and-white floor plans from 3D scan data. Architectural-grade documentation, zero drafting time.”,
+“svc4.num”:“04 / Discovery”,“svc4.title”:“Google Street<br>View Integration”,“svc4.body”:“One-click publishing to Google Maps. Boost local SEO — your virtual tours appear directly in Google Maps and Search results.”,
+“tech.label”:“The Technology”,“tech.h2”:“Built on<br>extraordinary<br>hardware.”,
+“tech1.num”:“Feature 01”,“tech1.title”:“8K Crystal-<br>Clear Resolution”,“tech1.body”:“Crystal-clear 8K Matterport digital twins provide unparalleled clarity and detail. Every corner, texture, and feature captured with professional-grade precision for a truly immersive viewing experience.”,
+“tech2.num”:“Feature 02”,“tech2.title”:“AI-Powered<br>Privacy Shield”,“tech2.body”:“Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging — built-in, not bolted-on.”,
+“tech3.num”:“Feature 03”,“tech3.title”:“Dollhouse<br>3D Viewing”,“tech3.body”:“Interactive dollhouse perspective lets viewers explore properties from a bird’s-eye view. Understand spatial relationships instantly — a competitive advantage for engaging buyers.”,
+“tech4.num”:“Feature 04”,“tech4.title”:“Insta360 X5<br>Hardware”,“tech4.body”:“Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport’s processing engine, it delivers unmatched virtual tour quality in the Montreal market.”,
+“quote.text”:”"Every property deserves to be experienced, not just described."”,“quote.attr”:“3D Virtuals — Montreal’s Immersive Real Estate Studio”,
+“contact.label”:“Get Started”,“contact.h2”:“Let’s tour<br>your space.”,“contact.desc”:“Request a quote and one of our imaging specialists will reach out within 24 hours. No GST / QST collected for small supplier services.”,
+“contact.addr_lbl”:“Address”,“contact.phone_lbl”:“Phone”,“contact.email_lbl”:“Email”,
+“form.title”:“Request a Quote”,“form.name_lbl”:“Full Name”,“form.name_ph”:“Jane Smith”,“form.email_lbl”:“Email Address”,“form.email_ph”:“jane@realty.com”,“form.phone_lbl”:“Phone Number”,“form.service_lbl”:“Service Type”,“form.service_ph”:“Select a service”,“form.opt1”:“Residential Tour”,“form.opt2”:“Commercial Digital Twin”,“form.opt3”:“Schematic Floor Plan”,“form.opt4”:“Google Street View Integration”,“form.submit”:“Request Quote →”,“form.sending”:“Sending…”,“form.done”:“✓ Quote Requested”,
+“footer.desc”:“Professional 3D virtual tours and digital twins for Montreal real estate. Serving realtors and property managers with 8K Matterport imaging.”,“footer.nav_title”:“Navigation”,“footer.nav1”:“Home”,“footer.nav2”:“Our Services”,“footer.nav3”:“Technology”,“footer.nav4”:“Contact Us”,“footer.svc_title”:“Services”,“footer.svc1”:“Residential Tours”,“footer.svc2”:“Commercial Digital Twins”,“footer.svc3”:“Floor Plans”,“footer.svc4”:“Google Street View”,“footer.copy”:“© 2025 3D Virtuals. All rights reserved. Proudly serving Montreal.”,“footer.tax”:“No GST / QST collected — small supplier”,“form.err_name”:“This field is required.”,“form.err_email”:“Invalid email address.”,“form.err_phone”:“Please enter a valid 10-digit phone number.”,“form.err_service”:“Please select a service.”,“form.sqft_lbl”:“Square Feet's (sq ft)”,“form.sqft_ph”:“e.g. 1200”,“form.err_sqft”:“Please enter the square footage.”,“form.addr_lbl”:“Property Address”,“form.addr_ph”:“123 Main St, Montreal”,“form.err_addr”:“This field is required.”,“form.success_text”:“Thank you! Your request has been sent.”,“form.success_sub”:“Our team will reach out to you within 24 hours.”
+}
 };
 
-var currentLang = "fr";
+var currentLang = “fr”;
 
 /* ── Language switcher ── */
 window.setLang = function(lang) {
-  currentLang = lang;
-  var dict = T[lang];
-  document.documentElement.lang = lang;
-  document.getElementById("btn-en").classList.toggle("active", lang === "en");
-  document.getElementById("btn-fr").classList.toggle("active", lang === "fr");
-  document.querySelectorAll("[data-i18n]").forEach(function(el) {
-    var key = el.getAttribute("data-i18n");
-    if (dict[key] !== undefined) el.innerHTML = dict[key];
-  });
-  document.querySelectorAll("[data-i18n-ph]").forEach(function(el) {
-    var key = el.getAttribute("data-i18n-ph");
-    if (dict[key] !== undefined) el.placeholder = dict[key];
-  });
-  /* flash */
-  document.body.style.opacity = "0.88";
-  setTimeout(function(){ document.body.style.opacity = "1"; }, 60);
+currentLang = lang;
+var dict = T[lang];
+document.documentElement.lang = lang;
+document.getElementById(“btn-en”).classList.toggle(“active”, lang === “en”);
+document.getElementById(“btn-fr”).classList.toggle(“active”, lang === “fr”);
+document.querySelectorAll(”[data-i18n]”).forEach(function(el) {
+var key = el.getAttribute(“data-i18n”);
+if (dict[key] !== undefined) el.innerHTML = dict[key];
+});
+document.querySelectorAll(”[data-i18n-ph]”).forEach(function(el) {
+var key = el.getAttribute(“data-i18n-ph”);
+if (dict[key] !== undefined) el.placeholder = dict[key];
+});
+/* update error texts */
+if (window._updateFormErrors) window._updateFormErrors(dict);
+/* flash */
+document.body.style.opacity = “0.88”;
+setTimeout(function(){ document.body.style.opacity = “1”; }, 60);
 };
 
 /* ── Scroll reveal (IntersectionObserver) ── */
 function initReveal() {
-  var els = document.querySelectorAll(".reveal");
-  if (!window.IntersectionObserver) {
-    els.forEach(function(el){ el.classList.add("in"); });
-    return;
-  }
-  var io = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.1 });
-  els.forEach(function(el, i) {
-    el.style.transitionDelay = ((i % 5) * 0.08) + "s";
-    io.observe(el);
-  });
+var els = document.querySelectorAll(”.reveal”);
+if (!window.IntersectionObserver) {
+els.forEach(function(el){ el.classList.add(“in”); });
+return;
+}
+var io = new IntersectionObserver(function(entries) {
+entries.forEach(function(e) {
+if (e.isIntersecting) { e.target.classList.add(“in”); io.unobserve(e.target); }
+});
+}, { threshold: 0.1 });
+els.forEach(function(el, i) {
+el.style.transitionDelay = ((i % 5) * 0.08) + “s”;
+io.observe(el);
+});
 }
 
 /* ── Nav shadow on scroll ── */
 function initNav() {
-  var nav = document.getElementById("nav");
-  window.addEventListener("scroll", function() {
-    if (window.scrollY > 60) nav.classList.add("scrolled");
-    else nav.classList.remove("scrolled");
-  }, { passive: true });
+var nav = document.getElementById(“nav”);
+window.addEventListener(“scroll”, function() {
+if (window.scrollY > 60) nav.classList.add(“scrolled”);
+else nav.classList.remove(“scrolled”);
+}, { passive: true });
 }
 
 /* ── Custom cursor ── */
 function initCursor() {
-  var cursor = document.getElementById("cursor");
-  if (!cursor || !window.matchMedia("(pointer:fine)").matches) return;
-  document.addEventListener("mousemove", function(e) {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top  = e.clientY + "px";
-  });
-  document.querySelectorAll("a, button, .svc-card, .tech-card").forEach(function(el) {
-    el.addEventListener("mouseenter", function(){ cursor.classList.add("hov"); });
-    el.addEventListener("mouseleave", function(){ cursor.classList.remove("hov"); });
-  });
+var cursor = document.getElementById(“cursor”);
+if (!cursor || !window.matchMedia(”(pointer:fine)”).matches) return;
+document.addEventListener(“mousemove”, function(e) {
+cursor.style.left = e.clientX + “px”;
+cursor.style.top  = e.clientY + “px”;
+});
+document.querySelectorAll(“a, button, .svc-card, .tech-card”).forEach(function(el) {
+el.addEventListener(“mouseenter”, function(){ cursor.classList.add(“hov”); });
+el.addEventListener(“mouseleave”, function(){ cursor.classList.remove(“hov”); });
+});
 }
 
-/* ── Form feedback ── */
+/* ── Form validation + feedback ── */
 function initForm() {
-  var btn = document.getElementById("form-submit");
-  if (!btn) return;
-  btn.addEventListener("click", function() {
-    var dict = T[currentLang];
-    btn.textContent = dict["form.sending"];
-    btn.style.background = "#12a354";
-    btn.disabled = true;
-    setTimeout(function() {
-      btn.textContent = dict["form.done"];
-      setTimeout(function() {
-        btn.innerHTML = dict["form.submit"];
-        btn.style.background = "";
-        btn.disabled = false;
-      }, 2500);
-    }, 900);
-  });
+var btn = document.getElementById(“form-submit”);
+if (!btn) return;
+
+var fields = [
+{ id: “f-name”,    errId: “err-name”,    type: “text” },
+{ id: “f-email”,   errId: “err-email”,   type: “email” },
+{ id: “f-phone”,   errId: “err-phone”,   type: “text” },
+{ id: “f-sqft”,    errId: “err-sqft”,    type: “text” },
+{ id: “f-address”, errId: “err-address”, type: “text” },
+{ id: “f-service”, errId: “err-service”, type: “select” }
+];
+
+/* Clear single field error on input */
+fields.forEach(function(f) {
+var el = document.getElementById(f.id);
+if (!el) return;
+el.addEventListener(“input”, function() { clearError(f.id, f.errId); });
+el.addEventListener(“change”, function() { clearError(f.id, f.errId); });
+});
+
+/* Auto-format phone as (XXX) XXX-XXXX */
+var phoneEl = document.getElementById(“f-phone”);
+if (phoneEl) {
+phoneEl.addEventListener(“input”, function() {
+var digits = phoneEl.value.replace(/\D/g, “”).slice(0, 10);
+var fmt = “”;
+if (digits.length === 0) { fmt = “”; }
+else if (digits.length <= 3) { fmt = “(” + digits; }
+else if (digits.length <= 6) { fmt = “(” + digits.slice(0,3) + “) “ + digits.slice(3); }
+else { fmt = “(” + digits.slice(0,3) + “) “ + digits.slice(3,6) + “-” + digits.slice(6); }
+phoneEl.value = fmt;
+});
 }
 
-/* ── Body transition for lang flash ── */
-document.body.style.transition = "opacity .25s";
+function clearError(fieldId, errId) {
+var el = document.getElementById(fieldId);
+var er = document.getElementById(errId);
+if (el) el.classList.remove(“error”);
+if (er) er.classList.remove(“show”);
+}
+
+function validateEmail(v) {
+return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(v.trim());
+}
+
+function updateErrors(dict) {
+/* Update error message text when language switches */
+document.getElementById(“err-name”).textContent    = dict[“form.err_name”]    || “This field is required.”;
+document.getElementById(“err-email”).textContent   = dict[“form.err_email”]   || “Invalid email address.”;
+document.getElementById(“err-phone”).textContent   = dict[“form.err_phone”]   || “Please enter a valid 10-digit phone number.”;
+document.getElementById(“err-sqft”).textContent    = dict[“form.err_sqft”]    || “Please enter the square footage.”;
+document.getElementById(“err-address”).textContent  = dict[“form.err_addr”]    || “This field is required.”;
+document.getElementById(“err-service”).textContent = dict[“form.err_service”] || “Please select a service.”;
+/* Update success message text if visible */
+var st = document.getElementById(“form-success-text”);
+var ss = document.getElementById(“form-success-sub”);
+if (st) st.textContent = dict[“form.success_text”] || “Thank you! Your request has been sent.”;
+if (ss) ss.textContent = dict[“form.success_sub”]  || “Our team will reach out to you within 24 hours.”;
+}
+
+/* Expose so setLang can call it */
+window._updateFormErrors = updateErrors;
+
+btn.addEventListener(“click”, function() {
+var dict = T[currentLang];
+var valid = true;
+
+```
+/* Name */
+var name = document.getElementById("f-name");
+if (!name.value.trim()) {
+  name.classList.add("error");
+  document.getElementById("err-name").classList.add("show");
+  valid = false;
+} else {
+  name.classList.remove("error");
+  document.getElementById("err-name").classList.remove("show");
+}
+
+/* Email */
+var email = document.getElementById("f-email");
+if (!email.value.trim() || !validateEmail(email.value)) {
+  email.classList.add("error");
+  document.getElementById("err-email").classList.add("show");
+  valid = false;
+} else {
+  email.classList.remove("error");
+  document.getElementById("err-email").classList.remove("show");
+}
+
+/* Phone — must contain exactly 10 digits */
+var phone = document.getElementById("f-phone");
+var phoneDigits = phone.value.replace(/\D/g, "");
+if (phoneDigits.length !== 10) {
+  phone.classList.add("error");
+  document.getElementById("err-phone").classList.add("show");
+  valid = false;
+} else {
+  phone.classList.remove("error");
+  document.getElementById("err-phone").classList.remove("show");
+}
+
+/* Square feet */
+var sqft = document.getElementById("f-sqft");
+if (!sqft.value || isNaN(sqft.value) || Number(sqft.value) < 1) {
+  sqft.classList.add("error");
+  document.getElementById("err-sqft").classList.add("show");
+  valid = false;
+} else {
+  sqft.classList.remove("error");
+  document.getElementById("err-sqft").classList.remove("show");
+}
+
+/* Address */
+var address = document.getElementById("f-address");
+if (!address.value.trim()) {
+  address.classList.add("error");
+  document.getElementById("err-address").classList.add("show");
+  valid = false;
+} else {
+  address.classList.remove("error");
+  document.getElementById("err-address").classList.remove("show");
+}
+
+/* Service */
+var service = document.getElementById("f-service");
+if (!service.value) {
+  service.classList.add("error");
+  document.getElementById("err-service").classList.add("show");
+  valid = false;
+} else {
+  service.classList.remove("error");
+  document.getElementById("err-service").classList.remove("show");
+}
+
+if (!valid) {
+  /* Shake the button */
+  btn.classList.remove("form-shake");
+  void btn.offsetWidth; /* reflow to restart animation */
+  btn.classList.add("form-shake");
+  setTimeout(function(){ btn.classList.remove("form-shake"); }, 450);
+  /* Scroll first error into view */
+  var firstErr = document.querySelector(".form-input.error, .form-select.error");
+  if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+  return;
+}
+
+/* All valid — submit */
+var successBox  = document.getElementById("form-success");
+var successText = document.getElementById("form-success-text");
+var successSub  = document.getElementById("form-success-sub");
+successBox.classList.remove("show");
+
+btn.textContent = dict["form.sending"];
+btn.style.background = "#12a354";
+btn.disabled = true;
+setTimeout(function() {
+  btn.textContent = dict["form.done"];
+  /* Show success message */
+  successText.textContent = dict["form.success_text"] || "Thank you! Your request has been sent.";
+  successSub.textContent  = dict["form.success_sub"]  || "Our team will reach out to you within 24 hours.";
+  successBox.classList.add("show");
+  setTimeout(function() {
+    btn.innerHTML = dict["form.submit"];
+    btn.style.background = "";
+    btn.disabled = false;
+    /* Reset form */
+    document.getElementById("f-name").value = "";
+    document.getElementById("f-email").value = "";
+    document.getElementById("f-phone").value = "";
+    document.getElementById("f-sqft").value = "";
+    document.getElementById("f-address").value = "";
+    document.getElementById("f-service").selectedIndex = 0;
+    /* Hide success after 6s */
+    setTimeout(function(){ successBox.classList.remove("show"); }, 6000);
+  }, 2500);
+}, 900);
+```
+
+});
+}
+
+/* ── Body transition for lang flash ─- */
+document.body.style.transition = “opacity .25s”;
 
 /* ── Boot ── */
-document.addEventListener("DOMContentLoaded", function() {
-  setLang("fr");
-  initReveal();
-  initNav();
-  initCursor();
-  initForm();
+document.addEventListener(“DOMContentLoaded”, function() {
+setLang(“fr”);
+initReveal();
+initNav();
+initCursor();
+initForm();
 });
 
 })();
