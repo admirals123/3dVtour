@@ -1,225 +1,266 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>3D Virtuals — Visites Virtuelles 3D | Montréal</title>
-<meta name="description" content="Visites virtuelles 8K Matterport et jumeaux numériques pour l'immobilier montréalais. (514) 919-1875" />
-<meta name="theme-color" content="#0061FE" />
+<meta name="description" content="Visites virtuelles 8K Matterport et jumeaux numériques pour l'immobilier montréalais. (514) 919-1875"/>
+<meta name="theme-color" content="#0061FE"/>
 <style>
 :root{
-  --ink:#1E1919;--canvas:#F7F5F2;--blue:#0061FE;
-  --pale-blue:#DBE8FF;--blush:#FFD6D6;--sage:#D3E8D4;
-  --slate:#2C2C2E;--mid:#6B6B6B;--yellow:#FFE566;
-  --rule:rgba(30,25,25,.12);
-  --ease-el:cubic-bezier(0.34,1.56,0.64,1);
-  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ink:#111010;--canvas:#F8F6F3;--blue:#0061FE;
+  --pale-blue:#E0ECFF;--blush:#FFE0E0;--sage:#D6EDD8;
+  --slate:#1C1C1E;--mid:#666;--light:#AAA;--yellow:#FFE14D;
+  --rule:rgba(17,16,16,.09);--rule-l:rgba(17,16,16,.05);
+  --ease-el:cubic-bezier(.34,1.56,.64,1);--ease-out:cubic-bezier(.16,1,.3,1);
+  --max:1300px;--pad:clamp(20px,5vw,80px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;font-size:16px;scroll-padding-top:80px;}
-body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--canvas);color:var(--ink);overflow-x:hidden;}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--canvas);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad);}
 
 /* Cursor */
 @media(pointer:fine){
   body{cursor:none;}
-  #cursor{width:12px;height:12px;background:var(--blue);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s var(--ease-el),height .25s var(--ease-el);mix-blend-mode:multiply;}
-  #cursor.hov{width:48px;height:48px;opacity:.3;}
+  #cursor{width:10px;height:10px;background:var(--blue);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s var(--ease-el),height .3s var(--ease-el);mix-blend-mode:multiply;}
+  #cursor.hov{width:40px;height:40px;opacity:.22;}
 }
 @media(pointer:coarse){#cursor{display:none;}}
 
 /* Keyframes */
-@keyframes fadeUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:none;}}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-@keyframes pulseR{0%{transform:scale(.7);opacity:.4;}100%{transform:scale(1.3);opacity:0;}}
-@keyframes orbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-28px);}}
-@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+@keyframes pulseR{0%{transform:scale(.7);opacity:.3;}100%{transform:scale(1.5);opacity:0;}}
+@keyframes orbDrift{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
 
-/* Scroll reveal */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity .75s var(--ease-out),transform .75s var(--ease-out);}
-.reveal.in{opacity:1;transform:translateY(0);}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s var(--ease-out),transform .65s var(--ease-out);}
+.reveal.in{opacity:1;transform:none;}
 
-/* Nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:0 5vw;height:72px;display:flex;align-items:center;justify-content:space-between;transition:background .4s;}
-nav.scrolled{background:rgba(247,245,242,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);}
-.nav-logo{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;color:var(--ink);text-decoration:none;flex-shrink:0;}
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;height:66px;transition:background .3s,box-shadow .3s;}
+nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:2rem;}
+nav.scrolled{background:rgba(248,246,243,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--rule);}
+.nav-logo{font-size:1.05rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);text-decoration:none;flex-shrink:0;}
 .nav-logo span{color:var(--blue);}
-.nav-links{display:flex;gap:2rem;list-style:none;}
-.nav-links a{font-size:.85rem;font-weight:500;color:var(--ink);text-decoration:none;opacity:.7;transition:opacity .2s;}
-.nav-links a:hover{opacity:1;}
-@media(max-width:700px){.nav-links{display:none;}}
-.nav-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
-.lang-toggle{display:flex;align-items:center;background:rgba(30,25,25,.08);border-radius:100px;padding:3px;}
-.lang-btn{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.36rem .8rem;border-radius:100px;border:none;background:transparent;color:var(--mid);cursor:pointer;transition:background .2s,color .2s;}
+.nav-center{display:flex;gap:2.2rem;list-style:none;flex:1;justify-content:center;}
+.nav-center a{font-size:.76rem;font-weight:500;color:var(--ink);text-decoration:none;letter-spacing:.04em;opacity:.5;transition:opacity .18s;}
+.nav-center a:hover{opacity:1;}
+@media(max-width:768px){.nav-center{display:none;}}
+.nav-right{display:flex;align-items:center;gap:.55rem;flex-shrink:0;}
+.lang-toggle{display:flex;align-items:center;background:rgba(17,16,16,.07);border-radius:100px;padding:3px;}
+.lang-btn{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .68rem;border-radius:100px;border:none;background:transparent;color:var(--mid);cursor:pointer;transition:background .18s,color .18s;}
 .lang-btn.active{background:var(--ink);color:#fff;}
 .lang-btn:not(.active):hover{color:var(--ink);}
-.nav-cta{background:var(--ink);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.6rem 1rem;border-radius:100px;text-decoration:none;white-space:nowrap;max-width:130px;text-align:center;line-height:1.3;display:inline-block;transition:background .2s var(--ease-el),transform .2s var(--ease-el);}
+.nav-cta{background:var(--ink);color:#fff;font-size:.63rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.55rem 1.1rem;border-radius:100px;text-decoration:none;white-space:nowrap;display:inline-block;line-height:1.3;transition:background .2s,transform .2s var(--ease-el);}
 .nav-cta:hover{background:var(--blue);transform:scale(1.04);}
 
-/* Hero */
-#hero{min-height:100svh;background:var(--canvas);display:flex;flex-direction:column;justify-content:flex-end;padding:0 5vw 9vh;position:relative;overflow:hidden;}
-.grid-lines{position:absolute;inset:0;pointer-events:none;display:grid;grid-template-columns:repeat(6,1fr);}
-.grid-lines span{border-right:1px solid var(--rule);height:100%;}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;pointer-events:none;}
-.orb-1{width:600px;height:600px;background:var(--pale-blue);top:-120px;right:-80px;animation:orbFloat 8s ease-in-out infinite;}
-.orb-2{width:400px;height:400px;background:var(--blush);bottom:10%;left:-60px;animation:orbFloat 10s ease-in-out infinite reverse;}
-.hero-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:2rem;animation:fadeUp .8s .3s var(--ease-out) both;}
-.hero-headline{font-size:clamp(3rem,9vw,9rem);font-weight:900;line-height:.96;letter-spacing:-.04em;color:var(--ink);max-width:16ch;animation:fadeUp 1s .5s var(--ease-out) both;}
+/* ── HERO ── */
+#hero{min-height:100svh;background:var(--canvas);display:grid;grid-template-rows:1fr auto;position:relative;overflow:hidden;}
+.hero-inner{display:flex;flex-direction:column;justify-content:flex-end;width:100%;max-width:var(--max);margin:0 auto;padding:120px var(--pad) 88px;}
+.grid-lines{position:absolute;inset:0;pointer-events:none;display:grid;grid-template-columns:repeat(8,1fr);}
+.grid-lines span{border-right:1px solid var(--rule-l);}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.42;pointer-events:none;}
+.orb-1{width:680px;height:680px;background:var(--pale-blue);top:-160px;right:-90px;animation:orbDrift 9s ease-in-out infinite;}
+.orb-2{width:480px;height:480px;background:var(--blush);bottom:0;left:-90px;animation:orbDrift 11s ease-in-out 1s infinite reverse;}
+.hero-eyebrow{font-size:.65rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:1.75rem;display:flex;align-items:center;gap:.7rem;animation:fadeUp .65s .2s var(--ease-out) both;}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--blue);}
+.hero-headline{font-size:clamp(3rem,6vw,7rem);font-weight:900;line-height:.94;letter-spacing:-.045em;color:var(--ink);max-width:13ch;animation:fadeUp .85s .38s var(--ease-out) both;}
 .hero-headline em{font-style:normal;color:var(--blue);}
-.hero-sub-row{margin-top:3.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;animation:fadeUp .9s .8s var(--ease-out) both;padding-bottom:80px;}
-.hero-sub{font-size:1.1rem;font-weight:400;color:var(--mid);max-width:38ch;line-height:1.65;}
-.hero-actions{display:flex;gap:1rem;align-items:center;flex-shrink:0;}
-.btn-primary{background:var(--blue);color:#fff;font-size:.85rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1rem 2rem;border-radius:100px;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:transform .25s var(--ease-el),box-shadow .25s;cursor:pointer;}
-.btn-primary:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 16px 40px rgba(0,97,254,.3);}
-.btn-ghost{background:transparent;color:var(--ink);font-size:.85rem;font-weight:600;padding:1rem 1.5rem;border:1.5px solid var(--rule);border-radius:100px;text-decoration:none;transition:border-color .2s,background .2s,color .2s;cursor:pointer;}
+.hero-foot{display:grid;grid-template-columns:1fr auto;gap:4rem;align-items:flex-end;margin-top:3.2rem;animation:fadeUp .75s .6s var(--ease-out) both;}
+@media(max-width:600px){.hero-foot{grid-template-columns:1fr;gap:1.75rem;}}
+.hero-sub{font-size:.95rem;color:var(--mid);line-height:1.75;max-width:42ch;}
+.hero-actions{display:flex;gap:.7rem;flex-wrap:wrap;}
+.btn-primary{background:var(--blue);color:#fff;font-size:.74rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.82rem 1.65rem;border-radius:100px;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:transform .22s var(--ease-el),box-shadow .22s;cursor:pointer;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,97,254,.26);}
+.btn-ghost{background:transparent;color:var(--ink);font-size:.74rem;font-weight:600;padding:.8rem 1.5rem;border:1.5px solid rgba(17,16,16,.18);border-radius:100px;text-decoration:none;transition:border-color .18s,background .18s,color .18s;cursor:pointer;}
 .btn-ghost:hover{border-color:var(--ink);background:var(--ink);color:#fff;}
-.marquee-wrap{position:absolute;bottom:0;left:0;right:0;overflow:hidden;border-top:1px solid var(--rule);background:var(--canvas);padding:.9rem 0;}
-.marquee-track{display:flex;gap:4rem;white-space:nowrap;animation:marquee 20s linear infinite;width:max-content;}
-.marquee-track span{font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);flex-shrink:0;}
+.marquee-wrap{border-top:1px solid var(--rule);background:var(--canvas);padding:.8rem 0;overflow:hidden;}
+.marquee-track{display:flex;gap:4rem;white-space:nowrap;animation:marquee 22s linear infinite;width:max-content;}
+.marquee-track span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--light);flex-shrink:0;}
 .marquee-dot{color:var(--blue)!important;}
 
-/* Section base */
-section{padding:12vh 5vw;position:relative;}
-.section-label{font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:3rem;display:flex;align-items:center;gap:1rem;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--rule);max-width:60px;}
-.section-h2{font-size:clamp(2.2rem,5vw,5.5rem);font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--ink);}
+/* ── STATS ── */
+#stats{background:var(--ink);}
+#stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid rgba(255,255,255,.05);}
+@media(max-width:640px){#stats .wrap{grid-template-columns:repeat(2,1fr);}}
+.stat-item{padding:3.2rem 2.8rem;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+@media(max-width:640px){.stat-item:nth-child(2){border-right:none;}}
+.stat-num{font-size:clamp(2.6rem,4vw,4.2rem);font-weight:900;letter-spacing:-.055em;line-height:1;color:var(--yellow);}
+.stat-rule{width:24px;height:2px;background:rgba(255,255,255,.12);margin:.85rem 0 .5rem;}
+.stat-label{font-size:.6rem;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;}
 
-/* Stats */
-#stats{background:var(--ink);color:#fff;padding:6vh 0;display:grid;grid-template-columns:repeat(4,1fr);}
-@media(max-width:700px){#stats{grid-template-columns:repeat(2,1fr);}}
-.stat-item{padding:2.5rem 2.5rem;border-right:1px solid rgba(255,255,255,.1);}
-.stat-item:last-child{border-right:none;}
-@media(max-width:700px){.stat-item:nth-child(2){border-right:none;}.stat-item:nth-child(3){border-right:1px solid rgba(255,255,255,.1);}}
-.stat-num{font-size:clamp(2.5rem,5vw,5rem);font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--yellow);}
-.stat-label{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.5);margin-top:.5rem;letter-spacing:.05em;text-transform:uppercase;}
+/* ── SECTION CHROME ── */
+.sec{padding:clamp(60px,8vw,120px) 0;}
+.eyebrow{font-size:.6rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:1.75rem;display:flex;align-items:center;gap:.65rem;}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--blue);}
+.sec-h2{font-size:clamp(2.2rem,3.6vw,4.4rem);font-weight:900;letter-spacing:-.04em;line-height:.97;color:var(--ink);}
 
-/* Services */
+/* ── SERVICES ── */
 #services{background:var(--canvas);}
-.services-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:3.5rem;}
-@media(max-width:900px){.services-grid{grid-template-columns:1fr;}}
-.svc-card{border-radius:22px;padding:2.5rem;display:flex;flex-direction:column;justify-content:space-between;min-height:320px;position:relative;overflow:hidden;transition:transform .4s var(--ease-out);}
-.svc-card:hover{transform:translateY(-6px);}
-.svc-card:nth-child(1){grid-column:span 7;background:var(--pale-blue);}
-.svc-card:nth-child(2){grid-column:span 5;background:var(--ink);color:#fff;}
-.svc-card:nth-child(3){grid-column:span 4;background:var(--blush);}
-.svc-card:nth-child(4){grid-column:span 8;background:var(--sage);}
-@media(max-width:900px){.svc-card:nth-child(1),.svc-card:nth-child(2),.svc-card:nth-child(3),.svc-card:nth-child(4){grid-column:span 1;min-height:260px;}}
-.svc-number{font-size:.65rem;font-weight:700;letter-spacing:.2em;opacity:.4;text-transform:uppercase;}
-.svc-icon{font-size:2.5rem;line-height:1;margin-top:auto;margin-bottom:.75rem;}
-.svc-title{font-size:1.45rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:.6rem;}
-.svc-body{font-size:.85rem;line-height:1.65;opacity:.7;max-width:36ch;}
-.svc-arrow{position:absolute;bottom:2rem;right:2rem;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;background:rgba(0,0,0,.08);transition:transform .25s var(--ease-el),background .2s;}
-.svc-card:nth-child(2) .svc-arrow{background:rgba(255,255,255,.12);}
-.svc-card:hover .svc-arrow{transform:translate(4px,-4px);background:var(--blue);color:#fff;}
+.svc-intro-row{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:flex-end;margin-bottom:3.5rem;}
+@media(max-width:768px){.svc-intro-row{grid-template-columns:1fr;gap:1.25rem;}}
+.svc-intro-copy{font-size:.9rem;color:var(--mid);line-height:1.78;max-width:40ch;}
 
-/* Technology */
-#technology{background:var(--canvas);padding-bottom:0;}
-.tech-intro{margin-bottom:5rem;}
-.tech-cards-stack{display:flex;flex-direction:column;gap:1.5rem;padding-bottom:12vh;}
-.tech-card{border-radius:24px;padding:3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:sticky;top:90px;}
-@media(max-width:700px){.tech-card{grid-template-columns:1fr;gap:1.5rem;padding:2.5rem;}}
-.tech-card:nth-child(1){background:#1A1A2E;color:#fff;z-index:10;}
-.tech-card:nth-child(2){background:var(--pale-blue);z-index:11;}
-.tech-card:nth-child(3){background:var(--yellow);z-index:12;}
-.tech-card:nth-child(4){background:var(--ink);color:#fff;z-index:13;}
-.tech-card-num{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.4;margin-bottom:1.2rem;}
-.tech-card-title{font-size:clamp(1.8rem,3vw,3rem);font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:1rem;}
-.tech-card-body{font-size:.95rem;line-height:1.7;opacity:.7;max-width:42ch;}
-.tech-card-visual{aspect-ratio:4/3;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:5rem;background:rgba(255,255,255,.1);position:relative;overflow:hidden;}
-@media(max-width:700px){.tech-card-visual{display:none;}}
-.tech-card:nth-child(2) .tech-card-visual{background:rgba(0,0,0,.06);}
-.tech-card:nth-child(3) .tech-card-visual{background:rgba(0,0,0,.07);}
-.pulse-ring{position:absolute;border-radius:50%;border:2px solid currentColor;opacity:.25;animation:pulseR 2.4s ease-out infinite;}
-.pulse-ring:nth-child(2){width:90px;height:90px;}
-.pulse-ring:nth-child(3){animation-delay:.7s;width:130px;height:130px;}
-.pulse-ring:nth-child(4){animation-delay:1.4s;width:180px;height:180px;}
+/* 3-up top row */
+.svc-top{display:grid;grid-template-columns:5fr 3.5fr 3.5fr;gap:12px;margin-bottom:12px;}
+@media(max-width:900px){.svc-top{grid-template-columns:1fr;}}
+/* bottom wide */
+.svc-bot{display:grid;grid-template-columns:1fr;gap:12px;}
+.svc-card{border-radius:18px;padding:2.5rem;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .35s var(--ease-out),box-shadow .35s;}
+.svc-card:hover{transform:translateY(-4px);box-shadow:0 18px 44px rgba(0,0,0,.09);}
+.svc-card.c1{background:var(--pale-blue);min-height:340px;}
+.svc-card.c2{background:var(--ink);color:#fff;min-height:280px;}
+.svc-card.c3{background:var(--blush);min-height:280px;}
+.svc-tag{font-size:.56rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.38;margin-bottom:auto;padding-bottom:2rem;}
+.svc-icon-box{width:46px;height:46px;border-radius:12px;background:rgba(17,16,16,.09);display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:1rem;}
+.svc-card.c2 .svc-icon-box{background:rgba(255,255,255,.1);}
+.svc-ttl{font-size:1.2rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:.45rem;}
+.svc-card.c1 .svc-ttl{font-size:1.45rem;}
+.svc-desc{font-size:.8rem;line-height:1.72;opacity:.62;max-width:30ch;}
+.svc-card.c1 .svc-desc{max-width:34ch;}
+.svc-arr{position:absolute;top:2.2rem;right:2.2rem;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;background:rgba(17,16,16,.08);transition:transform .22s var(--ease-el),background .2s,color .2s;}
+.svc-card.c2 .svc-arr{background:rgba(255,255,255,.1);}
+.svc-card:hover .svc-arr{transform:translate(3px,-3px);background:var(--blue);color:#fff;}
 
-/* Quote */
-#quote{background:var(--blue);color:#fff;padding:14vh 5vw;text-align:center;}
-.quote-text{font-size:clamp(1.8rem,5vw,5rem);font-weight:900;letter-spacing:-.04em;line-height:1.05;max-width:22ch;margin:0 auto 2.5rem;}
-.quote-attr{font-size:.78rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;opacity:.6;}
+/* Wide card */
+.svc-wide{background:var(--slate);color:#fff;border-radius:18px;padding:2.5rem 3rem;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;transition:box-shadow .35s;}
+.svc-wide:hover{box-shadow:0 20px 50px rgba(0,0,0,.2);}
+@media(max-width:768px){.svc-wide{grid-template-columns:1fr;gap:2rem;}}
+.svc-wide-lbl{font-size:.56rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.28;margin-bottom:1rem;}
+.svc-wide-ttl{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.55rem;}
+.svc-wide-desc{font-size:.82rem;line-height:1.73;opacity:.55;max-width:38ch;}
+.svc-stats{display:flex;align-items:center;gap:2rem;flex-shrink:0;}
+@media(max-width:768px){.svc-stats{flex-wrap:wrap;gap:1.5rem;}}
+.svc-stat{text-align:center;}
+.svc-stat-n{font-size:2.2rem;font-weight:900;letter-spacing:-.05em;color:var(--yellow);line-height:1;}
+.svc-stat-l{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-top:.3rem;}
+.svc-divider{width:1px;height:52px;background:rgba(255,255,255,.09);}
+@media(max-width:768px){.svc-divider{display:none;}}
 
-/* Contact */
+/* ── TECHNOLOGY ── */
+#technology{background:#0D0D0F;color:#fff;}
+#technology .eyebrow{color:rgba(255,255,255,.35);}
+#technology .eyebrow::before{background:rgba(255,255,255,.2);}
+#technology .sec-h2{color:#fff;}
+.tech-top{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:flex-end;margin-bottom:4.5rem;}
+@media(max-width:768px){.tech-top{grid-template-columns:1fr;gap:1.5rem;}}
+.tech-intro-p{font-size:.9rem;color:rgba(255,255,255,.4);line-height:1.78;max-width:40ch;}
+.tech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.06);}
+@media(max-width:768px){.tech-grid{grid-template-columns:1fr;}}
+.tech-cell{background:#0D0D0F;padding:3.2rem 2.8rem;display:flex;flex-direction:column;gap:1.1rem;position:relative;overflow:hidden;transition:background .28s;}
+.tech-cell:hover{background:rgba(255,255,255,.03);}
+.tech-cell::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);transform:scaleX(0);transform-origin:left;transition:transform .38s var(--ease-out);}
+.tech-cell:hover::after{transform:scaleX(1);}
+.tech-cell-n{font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.22);}
+.tech-cell-ico{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.45rem;}
+.tech-cell-ttl{font-size:1.35rem;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;}
+.tech-cell-body{font-size:.82rem;line-height:1.76;color:rgba(255,255,255,.4);max-width:38ch;}
+
+/* ── QUOTE ── */
+#quote{background:var(--blue);padding:clamp(60px,7vw,100px) 0;}
+#quote .wrap{display:grid;grid-template-columns:auto 1fr;gap:3.5rem;align-items:center;}
+@media(max-width:768px){#quote .wrap{grid-template-columns:1fr;gap:1.5rem;}}
+.quote-mark{font-size:8rem;line-height:.65;font-weight:900;color:rgba(255,255,255,.12);font-family:Georgia,serif;user-select:none;}
+.quote-txt{font-size:clamp(1.45rem,2.6vw,2.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.18;color:#fff;margin-bottom:1.4rem;}
+.quote-by{font-size:.65rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.52);display:flex;align-items:center;gap:.65rem;}
+.quote-by::before{content:'';width:20px;height:1px;background:rgba(255,255,255,.4);}
+
+/* ── CONTACT ── */
 #contact{background:var(--canvas);}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;margin-top:3.5rem;}
-@media(max-width:800px){.contact-grid{grid-template-columns:1fr;gap:3rem;}}
-.contact-left .section-h2{margin-bottom:1.25rem;}
-.contact-desc{color:var(--mid);font-size:1rem;line-height:1.7;max-width:40ch;margin-bottom:2.5rem;}
-.contact-info-row{display:flex;flex-direction:column;gap:1.25rem;}
-.contact-info-item{display:flex;align-items:flex-start;gap:1rem;}
-.ci-icon{width:38px;height:38px;border-radius:10px;background:var(--pale-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.ci-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.2rem;}
-.ci-value{font-size:.9rem;font-weight:500;color:var(--ink);text-decoration:none;}
-.ci-value:hover{color:var(--blue);}
+.contact-top{margin-bottom:3.5rem;}
+.contact-cols{display:grid;grid-template-columns:4fr 5fr;gap:5rem;align-items:start;}
+@media(max-width:900px){.contact-cols{grid-template-columns:1fr;gap:3rem;}}
+.contact-sticky{position:sticky;top:90px;}
+.contact-p{font-size:.88rem;color:var(--mid);line-height:1.78;max-width:36ch;margin:1.25rem 0 2.5rem;}
+.ci-list{display:flex;flex-direction:column;}
+.ci-row{display:flex;align-items:flex-start;gap:1rem;padding:1.1rem 0;border-bottom:1px solid var(--rule-l);}
+.ci-row:first-child{border-top:1px solid var(--rule-l);}
+.ci-ico{width:34px;height:34px;border-radius:9px;background:var(--pale-blue);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.88rem;}
+.ci-lbl{font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--light);margin-bottom:.18rem;}
+.ci-val{font-size:.84rem;font-weight:500;color:var(--ink);text-decoration:none;line-height:1.5;}
+a.ci-val:hover{color:var(--blue);}
 
 /* Form */
-.quote-form{background:var(--ink);border-radius:26px;padding:3rem;color:#fff;}
-.form-title{font-size:1.5rem;font-weight:900;letter-spacing:-.03em;margin-bottom:1.75rem;}
-.form-group{margin-bottom:1.1rem;}
-.form-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);display:block;margin-bottom:.4rem;}
-.form-input,.form-select{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.85rem 1.1rem;color:#fff;font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none;}
-.form-input::placeholder{color:rgba(255,255,255,.3);}
-.form-input:focus,.form-select:focus{border-color:var(--blue);background:rgba(0,97,254,.08);}
-.form-select option{background:var(--slate);color:#fff;}
-.form-input.err,.form-select.err{border-color:#ff4d4d!important;background:rgba(255,77,77,.1)!important;}
-.field-error{font-size:.7rem;font-weight:600;color:#ff7070;margin-top:.3rem;display:none;letter-spacing:.01em;}
-.field-error.show{display:block;}
-.form-submit{width:100%;margin-top:.75rem;padding:1.05rem;background:var(--blue);color:#fff;border:none;border-radius:100px;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform .25s var(--ease-el),box-shadow .25s,background .3s;}
-.form-submit:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,97,254,.4);}
-.form-submit:disabled{opacity:.7;cursor:not-allowed;transform:none;}
-.form-shake{animation:shake .4s var(--ease-out);}
-.form-success{display:none;margin-top:1.1rem;padding:1rem 1.25rem;border-radius:12px;background:rgba(18,163,84,.15);border:1px solid rgba(18,163,84,.35);text-align:center;}
-.form-success.show{display:block;animation:fadeUp .5s var(--ease-out) both;}
-.form-success-icon{font-size:1.4rem;display:block;margin-bottom:.3rem;}
-.form-success-text{font-size:.88rem;font-weight:700;color:#6ee7a0;line-height:1.5;}
-.form-success-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.25rem;}
+.qform{background:var(--slate);border-radius:22px;padding:2.8rem;color:#fff;box-shadow:0 24px 64px rgba(0,0,0,.16);}
+.qform-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap;}
+.qform-ttl{font-size:1.25rem;font-weight:800;letter-spacing:-.03em;}
+.qform-badge{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(0,97,254,.18);color:var(--blue);padding:.28rem .7rem;border-radius:100px;flex-shrink:0;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+@media(max-width:480px){.frow{grid-template-columns:1fr;}}
+.fg{margin-bottom:.8rem;}
+.fl{font-size:.55rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);display:block;margin-bottom:.32rem;}
+.fi,.fs{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:.75rem .95rem;color:#fff;font-size:.84rem;font-family:inherit;outline:none;transition:border-color .18s,background .18s;-webkit-appearance:none;}
+.fi::placeholder{color:rgba(255,255,255,.22);}
+.fi:focus,.fs:focus{border-color:var(--blue);background:rgba(0,97,254,.07);}
+.fs{cursor:pointer;}
+.fs option{background:#1C1C1E;color:#fff;}
+.fi.err,.fs.err{border-color:#ff5050!important;background:rgba(255,50,50,.07)!important;}
+.ferr{font-size:.65rem;font-weight:600;color:#ff7070;margin-top:.26rem;display:none;}
+.ferr.show{display:block;}
+.fdivider{height:1px;background:rgba(255,255,255,.07);margin:.6rem 0 .9rem;}
+.fsub{width:100%;padding:.95rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform .22s var(--ease-el),box-shadow .22s,background .2s;}
+.fsub:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,97,254,.32);}
+.fsub:disabled{opacity:.6;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+.fsub.form-shake{animation:shake .32s var(--ease-out);}
+.fsuccess{display:none;margin-top:.9rem;padding:.85rem 1rem;border-radius:9px;background:rgba(20,180,100,.1);border:1px solid rgba(20,180,100,.22);text-align:center;}
+.fsuccess.show{display:block;animation:fadeUp .4s var(--ease-out) both;}
+.fsuccess-ico{font-size:1.2rem;display:block;margin-bottom:.2rem;}
+.fsuccess-ttl{font-size:.8rem;font-weight:700;color:#6ee7a0;}
+.fsuccess-sub{font-size:.7rem;color:rgba(255,255,255,.38);margin-top:.18rem;}
 
-/* Footer */
-footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;border-top:1px solid rgba(255,255,255,.06);}
-.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;margin-bottom:4rem;}
-@media(max-width:700px){.footer-top{grid-template-columns:1fr;gap:2rem;}}
-.footer-brand-name{font-size:1.3rem;font-weight:900;letter-spacing:-.03em;color:#fff;margin-bottom:.75rem;}
-.footer-brand-name span{color:var(--blue);}
-.footer-desc{font-size:.85rem;line-height:1.7;max-width:34ch;}
-.footer-col-title{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1.1rem;}
-.footer-links{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
-.footer-links a{font-size:.85rem;color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:#fff;}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;flex-wrap:wrap;gap:1rem;}
+/* ── FOOTER ── */
+footer{background:var(--ink);}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3.5rem;padding:4.5rem 0 3rem;border-bottom:1px solid rgba(255,255,255,.06);}
+@media(max-width:900px){.footer-top{grid-template-columns:1fr 1fr;gap:2.5rem;}}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr;gap:2rem;}}
+.footer-logo{font-size:1.05rem;font-weight:800;letter-spacing:-.03em;color:#fff;margin-bottom:.6rem;}
+.footer-logo span{color:var(--blue);}
+.footer-tag{font-size:.78rem;line-height:1.7;color:rgba(255,255,255,.32);max-width:28ch;}
+.footer-col-ttl{font-size:.56rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.26);margin-bottom:.9rem;}
+.footer-lnks{list-style:none;display:flex;flex-direction:column;gap:.5rem;}
+.footer-lnks a{font-size:.78rem;color:rgba(255,255,255,.4);text-decoration:none;transition:color .16s;}
+.footer-lnks a:hover{color:#fff;}
+.footer-bot{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0;font-size:.68rem;color:rgba(255,255,255,.26);flex-wrap:wrap;gap:.75rem;}
 </style>
 </head>
 <body>
-
 <div id="cursor"></div>
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="#" class="nav-logo">3D<span>Virtuals</span></a>
-  <ul class="nav-links">
-    <li><a href="#services" data-i18n="nav.services">Services</a></li>
-    <li><a href="#technology" data-i18n="nav.technology">Technologie</a></li>
-    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
-    <div class="lang-toggle" role="group" aria-label="Language">
-      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
-      <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <div class="wrap">
+    <a href="#" class="nav-logo">3D<span>Virtuals</span></a>
+    <ul class="nav-center">
+      <li><a href="#services" data-i18n="nav.services">Services</a></li>
+      <li><a href="#technology" data-i18n="nav.technology">Technologie</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+      </div>
+      <a href="#contact" class="nav-cta" data-i18n="nav.cta">Obtenir un devis</a>
     </div>
-    <a href="#contact" class="nav-cta" data-i18n="nav.cta">Obtenir un devis</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="orb orb-1" aria-hidden="true"></div>
   <div class="orb orb-2" aria-hidden="true"></div>
-  <p class="hero-eyebrow" data-i18n="hero.eyebrow">Technologie Immobilière — Montréal</p>
-  <h1 class="hero-headline" data-i18n="hero.headline">Visitez chaque pièce <em>avant</em><br>d'arriver.</h1>
-  <div class="hero-sub-row">
-    <p class="hero-sub" data-i18n="hero.sub">Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.</p>
-    <div class="hero-actions">
-      <a href="#services" class="btn-primary" data-i18n="hero.cta1">Explorer nos services →</a>
-      <a href="#contact" class="btn-ghost" data-i18n="hero.cta2">Obtenir un devis</a>
+  <div class="hero-inner">
+    <p class="hero-eyebrow" data-i18n="hero.eyebrow">Technologie Immobilière — Montréal</p>
+    <h1 class="hero-headline" data-i18n="hero.headline">Visitez chaque pièce <em>avant</em><br>d'arriver.</h1>
+    <div class="hero-foot">
+      <p class="hero-sub" data-i18n="hero.sub">Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.</p>
+      <div class="hero-actions">
+        <a href="#services" class="btn-primary" data-i18n="hero.cta1">Explorer nos services →</a>
+        <a href="#contact" class="btn-ghost" data-i18n="hero.cta2">Obtenir un devis</a>
+      </div>
     </div>
   </div>
   <div class="marquee-wrap" aria-hidden="true">
@@ -244,198 +285,140 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
 
 <!-- STATS -->
 <div id="stats">
-  <div class="stat-item reveal"><div class="stat-num">8K</div><div class="stat-label" data-i18n="stats.res">Résolution Matterport</div></div>
-  <div class="stat-item reveal"><div class="stat-num">99%</div><div class="stat-label" data-i18n="stats.acc">Précision des plans</div></div>
-  <div class="stat-item reveal"><div class="stat-num">360°</div><div class="stat-label" data-i18n="stats.cov">Couverture immersive</div></div>
-  <div class="stat-item reveal"><div class="stat-num">MTL</div><div class="stat-label" data-i18n="stats.loc">Équipe basée à Montréal</div></div>
+  <div class="wrap">
+    <div class="stat-item reveal"><div class="stat-num">8K</div><div class="stat-rule"></div><div class="stat-label" data-i18n="stats.res">Résolution Matterport</div></div>
+    <div class="stat-item reveal"><div class="stat-num">99%</div><div class="stat-rule"></div><div class="stat-label" data-i18n="stats.acc">Précision des plans</div></div>
+    <div class="stat-item reveal"><div class="stat-num">360°</div><div class="stat-rule"></div><div class="stat-label" data-i18n="stats.cov">Couverture immersive</div></div>
+    <div class="stat-item reveal"><div class="stat-num">MTL</div><div class="stat-rule"></div><div class="stat-label" data-i18n="stats.loc">Équipe basée à Montréal</div></div>
+  </div>
 </div>
 
 <!-- SERVICES -->
-<section id="services">
-  <p class="section-label reveal" data-i18n="svc.label">Ce que nous faisons</p>
-  <h2 class="section-h2 reveal" data-i18n="svc.h2">Quatre façons de<br>valoriser vos espaces.</h2>
-  <div class="services-grid">
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc1.num">01 / Résidentiel</div></div>
+<section id="services" class="sec">
+  <div class="wrap">
+    <div class="svc-intro-row">
       <div>
-        <div class="svc-icon">🏠</div>
-        <div class="svc-title" data-i18n="svc1.title">Visites Virtuelles<br>Résidentielles</div>
-        <p class="svc-body" data-i18n="svc1.body">Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.</p>
+        <p class="eyebrow reveal" data-i18n="svc.label">Ce que nous faisons</p>
+        <h2 class="sec-h2 reveal" data-i18n="svc.h2">Quatre façons de<br>valoriser vos espaces.</h2>
       </div>
-      <div class="svc-arrow">↗</div>
+      <p class="svc-intro-copy reveal" data-i18n="svc.intro">Des solutions d'imagerie 3D complètes pour les professionnels de l'immobilier à Montréal — du condo résidentiel aux grands espaces commerciaux.</p>
     </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc2.num">02 / Commercial</div></div>
-      <div>
-        <div class="svc-icon">🏢</div>
-        <div class="svc-title" data-i18n="svc2.title">Jumeaux Numériques<br>Commerciaux</div>
-        <p class="svc-body" data-i18n="svc2.body">Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.</p>
+
+    <div class="svc-top">
+      <div class="svc-card c1 reveal">
+        <div class="svc-tag" data-i18n="svc1.num">01 / Résidentiel</div>
+        <div><div class="svc-icon-box">🏠</div><div class="svc-ttl" data-i18n="svc1.title">Visites Virtuelles<br>Résidentielles</div><p class="svc-desc" data-i18n="svc1.body">Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution.</p></div>
+        <div class="svc-arr">↗</div>
       </div>
-      <div class="svc-arrow">↗</div>
+      <div class="svc-card c2 reveal">
+        <div class="svc-tag" data-i18n="svc2.num">02 / Commercial</div>
+        <div><div class="svc-icon-box">🏢</div><div class="svc-ttl" data-i18n="svc2.title">Jumeaux Numériques<br>Commerciaux</div><p class="svc-desc" data-i18n="svc2.body">Documentation 3D entreprise pour commerces, bureaux et espaces communs.</p></div>
+        <div class="svc-arr">↗</div>
+      </div>
+      <div class="svc-card c3 reveal">
+        <div class="svc-tag" data-i18n="svc3.num">03 / Plans</div>
+        <div><div class="svc-icon-box">📐</div><div class="svc-ttl" data-i18n="svc3.title">Plans d'étage<br>Schématiques</div><p class="svc-desc" data-i18n="svc3.body">Plans précis à 99 %, générés par IA à partir de données 3D.</p></div>
+        <div class="svc-arr">↗</div>
+      </div>
     </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc3.num">03 / Plans</div></div>
-      <div>
-        <div class="svc-icon">📐</div>
-        <div class="svc-title" data-i18n="svc3.title">Plans d'étage<br>Schématiques</div>
-        <p class="svc-body" data-i18n="svc3.body">Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.</p>
+
+    <div class="svc-bot">
+      <div class="svc-wide reveal">
+        <div>
+          <div class="svc-wide-lbl" data-i18n="svc4.num">04 / Découverte</div>
+          <div class="svc-wide-ttl" data-i18n="svc4.title">Intégration Google Street View</div>
+          <p class="svc-wide-desc" data-i18n="svc4.body">Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans les résultats de recherche.</p>
+        </div>
+        <div class="svc-stats">
+          <div class="svc-stat"><div class="svc-stat-n">+1M</div><div class="svc-stat-l" data-i18n="svc4.stat1">Vues / mois</div></div>
+          <div class="svc-divider"></div>
+          <div class="svc-stat"><div class="svc-stat-n">1×</div><div class="svc-stat-l" data-i18n="svc4.stat2">Publication</div></div>
+          <div class="svc-divider"></div>
+          <div class="svc-stat"><div class="svc-stat-n">SEO</div><div class="svc-stat-l" data-i18n="svc4.stat3">Boost local</div></div>
+        </div>
       </div>
-      <div class="svc-arrow">↗</div>
-    </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc4.num">04 / Découverte</div></div>
-      <div>
-        <div class="svc-icon">🗺️</div>
-        <div class="svc-title" data-i18n="svc4.title">Intégration Google<br>Street View</div>
-        <p class="svc-body" data-i18n="svc4.body">Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.</p>
-      </div>
-      <div class="svc-arrow">↗</div>
     </div>
   </div>
 </section>
 
 <!-- TECHNOLOGY -->
-<section id="technology">
-  <p class="section-label reveal" data-i18n="tech.label">La Technologie</p>
-  <h2 class="section-h2 reveal tech-intro" data-i18n="tech.h2">Alimenté par un<br>matériel<br>d'exception.</h2>
-  <div class="tech-cards-stack">
-    <div class="tech-card reveal">
+<section id="technology" class="sec" style="padding-bottom:0;">
+  <div class="wrap">
+    <div class="tech-top">
       <div>
-        <div class="tech-card-num" data-i18n="tech1.num">Fonctionnalité 01</div>
-        <h3 class="tech-card-title" data-i18n="tech1.title">Résolution 8K<br>Cristalline</h3>
-        <p class="tech-card-body" data-i18n="tech1.body">Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique capturé avec précision professionnelle pour une expérience vraiment immersive.</p>
+        <p class="eyebrow reveal" data-i18n="tech.label">La Technologie</p>
+        <h2 class="sec-h2 reveal" data-i18n="tech.h2">Alimenté par un<br>matériel<br>d'exception.</h2>
       </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🔭</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
+      <p class="tech-intro-p reveal" data-i18n="tech.intro">Chaque outil de notre arsenal a été sélectionné pour offrir la qualité la plus élevée du marché montréalais — sans compromis.</p>
     </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech2.num">Fonctionnalité 02</div>
-        <h3 class="tech-card-title" data-i18n="tech2.title">Bouclier de<br>Confidentialité IA</h3>
-        <p class="tech-card-body" data-i18n="tech2.body">La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🛡️</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
-    </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech3.num">Fonctionnalité 03</div>
-        <h3 class="tech-card-title" data-i18n="tech3.title">Vue Dollhouse<br>en 3D</h3>
-        <p class="tech-card-body" data-i18n="tech3.body">La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales — un avantage pour captiver les acheteurs.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🏘️</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
-    </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech4.num">Fonctionnalité 04</div>
-        <h3 class="tech-card-title" data-i18n="tech4.title">Matériel<br>Insta360 X5</h3>
-        <p class="tech-card-body" data-i18n="tech4.body">L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">📷</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
+    <div class="tech-grid">
+      <div class="tech-cell reveal"><div class="tech-cell-n" data-i18n="tech1.num">Fonctionnalité 01</div><div class="tech-cell-ico">🔭</div><div class="tech-cell-ttl" data-i18n="tech1.title">Résolution 8K Cristalline</div><p class="tech-cell-body" data-i18n="tech1.body">Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique capturé avec précision professionnelle.</p></div>
+      <div class="tech-cell reveal"><div class="tech-cell-n" data-i18n="tech2.num">Fonctionnalité 02</div><div class="tech-cell-ico">🛡️</div><div class="tech-cell-ttl" data-i18n="tech2.title">Bouclier Confidentialité IA</div><p class="tech-cell-body" data-i18n="tech2.body">La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Imagerie conforme au RGPD, intégrée nativement.</p></div>
+      <div class="tech-cell reveal"><div class="tech-cell-n" data-i18n="tech3.num">Fonctionnalité 03</div><div class="tech-cell-ico">🏘️</div><div class="tech-cell-ttl" data-i18n="tech3.title">Vue Dollhouse en 3D</div><p class="tech-cell-body" data-i18n="tech3.body">La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales.</p></div>
+      <div class="tech-cell reveal"><div class="tech-cell-n" data-i18n="tech4.num">Fonctionnalité 04</div><div class="tech-cell-ico">📷</div><div class="tech-cell-ttl" data-i18n="tech4.title">Matériel Insta360 X5</div><p class="tech-cell-body" data-i18n="tech4.body">L'Insta360 X5 capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.</p></div>
     </div>
   </div>
 </section>
 
 <!-- QUOTE -->
 <section id="quote">
-  <p class="quote-text reveal" data-i18n="quote.text">« Chaque propriété mérite d'être vécue, pas seulement décrite. »</p>
-  <p class="quote-attr reveal" data-i18n="quote.attr">3D Virtuals — Studio Immobilier Immersif de Montréal</p>
+  <div class="wrap">
+    <div class="quote-mark" aria-hidden="true">"</div>
+    <div>
+      <p class="quote-txt reveal" data-i18n="quote.text">Chaque propriété mérite d'être vécue, pas seulement décrite.</p>
+      <p class="quote-by reveal" data-i18n="quote.attr">3D Virtuals — Studio Immobilier Immersif de Montréal</p>
+    </div>
+  </div>
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
-  <p class="section-label reveal" data-i18n="contact.label">Commencer</p>
-  <div class="contact-grid">
-    <div class="contact-left">
-      <h2 class="section-h2 reveal" data-i18n="contact.h2">Visitons<br>votre espace.</h2>
-      <p class="contact-desc reveal" data-i18n="contact.desc">Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.</p>
-      <div class="contact-info-row">
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">📍</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.addr_lbl">Adresse</div>
-            <div class="ci-value">6565 Kildare, Côte-Saint-Luc &amp; Montréal<br>Québec, Canada</div>
-          </div>
-        </div>
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">📞</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.phone_lbl">Téléphone</div>
-            <a href="tel:+15149191875" class="ci-value">(514) 919-1875</a>
-          </div>
-        </div>
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">✉️</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.email_lbl">Courriel</div>
-            <a href="mailto:pranabhi3dtours&#64;gmail.com" class="ci-value">pranabhi3dtours&#64;gmail.com</a>
-          </div>
-        </div>
-      </div>
+<section id="contact" class="sec">
+  <div class="wrap">
+    <div class="contact-top">
+      <p class="eyebrow reveal" data-i18n="contact.label">Commencer</p>
+      <h2 class="sec-h2 reveal" data-i18n="contact.h2">Visitons<br>votre espace.</h2>
     </div>
-
-    <!-- FORM -->
-    <div class="quote-form reveal">
-      <div class="form-title" data-i18n="form.title">Demande de devis</div>
-
-      <div class="form-group">
-        <label class="form-label" for="f-name" data-i18n="form.name_lbl">Nom complet</label>
-        <input class="form-input" type="text" id="f-name" autocomplete="name" data-i18n-ph="form.name_ph" placeholder="Jean Tremblay" />
-        <span class="field-error" id="err-name">Ce champ est obligatoire.</span>
+    <div class="contact-cols">
+      <div class="contact-sticky">
+        <p class="contact-p reveal" data-i18n="contact.desc">Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.</p>
+        <div class="ci-list">
+          <div class="ci-row reveal"><div class="ci-ico">📍</div><div><div class="ci-lbl" data-i18n="contact.addr_lbl">Adresse</div><div class="ci-val">6565 Kildare, Côte-Saint-Luc &amp; Montréal<br>Québec, Canada</div></div></div>
+          <div class="ci-row reveal"><div class="ci-ico">📞</div><div><div class="ci-lbl" data-i18n="contact.phone_lbl">Téléphone</div><a href="tel:+15149191875" class="ci-val">(514) 919-1875</a></div></div>
+          <div class="ci-row reveal"><div class="ci-ico">✉️</div><div><div class="ci-lbl" data-i18n="contact.email_lbl">Courriel</div><a href="mailto:pranabhi3dtours&#64;gmail.com" class="ci-val">pranabhi3dtours&#64;gmail.com</a></div></div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="f-email" data-i18n="form.email_lbl">Adresse courriel</label>
-        <input class="form-input" type="email" id="f-email" autocomplete="email" data-i18n-ph="form.email_ph" placeholder="jean@immobilier.com" />
-        <span class="field-error" id="err-email">Adresse courriel invalide.</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="f-phone" data-i18n="form.phone_lbl">Numéro de téléphone</label>
-        <input class="form-input" type="tel" id="f-phone" autocomplete="tel" inputmode="numeric" maxlength="15" placeholder="(514) 000-0000" />
-        <span class="field-error" id="err-phone">Veuillez entrer un numéro à 10 chiffres.</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="f-sqft" data-i18n="form.sqft_lbl">Superficie (pi²)</label>
-        <input class="form-input" type="text" id="f-sqft" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-i18n-ph="form.sqft_ph" placeholder="ex. 1200" />
-        <span class="field-error" id="err-sqft">Veuillez entrer la superficie.</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="f-address" data-i18n="form.addr_lbl">Adresse de la propriété</label>
-        <input class="form-input" type="text" id="f-address" autocomplete="street-address" data-i18n-ph="form.addr_ph" placeholder="123 Rue Principale, Montréal" />
-        <span class="field-error" id="err-address">Ce champ est obligatoire.</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="f-service" data-i18n="form.service_lbl">Type de service</label>
-        <select class="form-select form-input" id="f-service">
-          <option value="" disabled selected data-i18n="form.service_ph">Choisir un service</option>
-          <option data-i18n="form.opt1">Visite résidentielle</option>
-          <option data-i18n="form.opt2">Jumeau numérique commercial</option>
-          <option data-i18n="form.opt3">Plan d'étage schématique</option>
-          <option data-i18n="form.opt4">Intégration Google Street View</option>
-        </select>
-        <span class="field-error" id="err-service">Veuillez choisir un service.</span>
-      </div>
-
-      <button class="form-submit" id="form-submit" data-i18n="form.submit">Envoyer la demande →</button>
-
-      <div class="form-success" id="form-success">
-        <span class="form-success-icon">✅</span>
-        <div class="form-success-text" id="form-success-text">Merci ! Votre demande a été envoyée.</div>
-        <div class="form-success-sub" id="form-success-sub">Notre équipe vous contactera dans les 24 heures.</div>
+      <div class="qform reveal">
+        <div class="qform-head">
+          <div class="qform-ttl" data-i18n="form.title">Demande de devis</div>
+          <div class="qform-badge" data-i18n="form.badge">Réponse sous 24h</div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl" for="f-name" data-i18n="form.name_lbl">Nom complet</label><input class="fi" type="text" id="f-name" autocomplete="name" data-i18n-ph="form.name_ph" placeholder="Jean Tremblay"/><span class="ferr" id="err-name">Ce champ est obligatoire.</span></div>
+          <div class="fg"><label class="fl" for="f-email" data-i18n="form.email_lbl">Courriel</label><input class="fi" type="email" id="f-email" autocomplete="email" data-i18n-ph="form.email_ph" placeholder="jean@immobilier.com"/><span class="ferr" id="err-email">Adresse courriel invalide.</span></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl" for="f-phone" data-i18n="form.phone_lbl">Téléphone</label><input class="fi" type="tel" id="f-phone" autocomplete="tel" inputmode="numeric" maxlength="15" placeholder="(514) 000-0000"/><span class="ferr" id="err-phone">Numéro à 10 chiffres requis.</span></div>
+          <div class="fg"><label class="fl" for="f-sqft" data-i18n="form.sqft_lbl">Superficie (pi²)</label><input class="fi" type="text" id="f-sqft" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-i18n-ph="form.sqft_ph" placeholder="ex. 1200"/><span class="ferr" id="err-sqft">Veuillez entrer la superficie.</span></div>
+        </div>
+        <div class="fg"><label class="fl" for="f-address" data-i18n="form.addr_lbl">Adresse de la propriété</label><input class="fi" type="text" id="f-address" autocomplete="street-address" data-i18n-ph="form.addr_ph" placeholder="123 Rue Principale, Montréal"/><span class="ferr" id="err-address">Ce champ est obligatoire.</span></div>
+        <div class="fg"><label class="fl" for="f-service" data-i18n="form.service_lbl">Type de service</label>
+          <select class="fs fi" id="f-service">
+            <option value="" disabled selected data-i18n="form.service_ph">Choisir un service</option>
+            <option data-i18n="form.opt1">Visite résidentielle</option>
+            <option data-i18n="form.opt2">Jumeau numérique commercial</option>
+            <option data-i18n="form.opt3">Plan d'étage schématique</option>
+            <option data-i18n="form.opt4">Intégration Google Street View</option>
+          </select>
+          <span class="ferr" id="err-service">Veuillez choisir un service.</span>
+        </div>
+        <div class="fdivider"></div>
+        <button class="fsub" id="form-submit" data-i18n="form.submit">Envoyer la demande →</button>
+        <div class="fsuccess" id="form-success">
+          <span class="fsuccess-ico">✅</span>
+          <div class="fsuccess-ttl" id="form-success-text">Merci ! Votre demande a été envoyée.</div>
+          <div class="fsuccess-sub" id="form-success-sub">Notre équipe vous contactera dans les 24 heures.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -443,44 +426,27 @@ footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;bo
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-top">
-    <div>
-      <div class="footer-brand-name">3D<span>Virtuals</span></div>
-      <p class="footer-desc" data-i18n="footer.desc">Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.</p>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">3D<span>Virtuals</span></div>
+        <p class="footer-tag" data-i18n="footer.desc">Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais.</p>
+      </div>
+      <div><div class="footer-col-ttl" data-i18n="footer.nav_title">Navigation</div><ul class="footer-lnks"><li><a href="#hero" data-i18n="footer.nav1">Accueil</a></li><li><a href="#services" data-i18n="footer.nav2">Nos services</a></li><li><a href="#technology" data-i18n="footer.nav3">Technologie</a></li><li><a href="#contact" data-i18n="footer.nav4">Nous joindre</a></li></ul></div>
+      <div><div class="footer-col-ttl" data-i18n="footer.svc_title">Services</div><ul class="footer-lnks"><li><a href="#services" data-i18n="footer.svc1">Visites résidentielles</a></li><li><a href="#services" data-i18n="footer.svc2">Jumeaux numériques</a></li><li><a href="#services" data-i18n="footer.svc3">Plans d'étage</a></li><li><a href="#services" data-i18n="footer.svc4">Google Street View</a></li></ul></div>
+      <div><div class="footer-col-ttl" data-i18n="footer.contact_title">Contact</div><ul class="footer-lnks"><li><a href="tel:+15149191875">(514) 919-1875</a></li><li><a href="mailto:pranabhi3dtours&#64;gmail.com">pranabhi3dtours&#64;gmail.com</a></li><li><a href="#contact" data-i18n="footer.quote_link">Obtenir un devis</a></li></ul></div>
     </div>
-    <div>
-      <div class="footer-col-title" data-i18n="footer.nav_title">Navigation</div>
-      <ul class="footer-links">
-        <li><a href="#hero" data-i18n="footer.nav1">Accueil</a></li>
-        <li><a href="#services" data-i18n="footer.nav2">Nos services</a></li>
-        <li><a href="#technology" data-i18n="footer.nav3">Technologie</a></li>
-        <li><a href="#contact" data-i18n="footer.nav4">Nous joindre</a></li>
-      </ul>
+    <div class="footer-bot">
+      <span data-i18n="footer.copy">© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.</span>
+      <span data-i18n="footer.tax">Aucune TPS / TVQ perçue — petit fournisseur</span>
     </div>
-    <div>
-      <div class="footer-col-title" data-i18n="footer.svc_title">Services</div>
-      <ul class="footer-links">
-        <li><a href="#services" data-i18n="footer.svc1">Visites résidentielles</a></li>
-        <li><a href="#services" data-i18n="footer.svc2">Jumeaux numériques</a></li>
-        <li><a href="#services" data-i18n="footer.svc3">Plans d'étage</a></li>
-        <li><a href="#services" data-i18n="footer.svc4">Google Street View</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span data-i18n="footer.copy">© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.</span>
-    <span data-i18n="footer.tax">Aucune TPS / TVQ perçue — petit fournisseur</span>
   </div>
 </footer>
 
 <script>
 (function(){
 "use strict";
-
-/* ================================================================
-   TRANSLATIONS
-================================================================ */
-var T = {
+var T={
   fr:{
     "nav.services":"Services","nav.technology":"Technologie","nav.contact":"Contact","nav.cta":"Obtenir un devis",
     "hero.eyebrow":"Technologie Immobilière — Montréal",
@@ -490,32 +456,35 @@ var T = {
     "marq.twin":"Jumeaux Numériques","marq.plan":"Plans d'étage","marq.priv":"Confidentialité IA","marq.doll":"Vue Dollhouse 3D",
     "stats.res":"Résolution Matterport","stats.acc":"Précision des plans","stats.cov":"Couverture immersive","stats.loc":"Équipe basée à Montréal",
     "svc.label":"Ce que nous faisons","svc.h2":"Quatre façons de<br>valoriser vos espaces.",
-    "svc1.num":"01 / Résidentiel","svc1.title":"Visites Virtuelles<br>Résidentielles","svc1.body":"Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.",
-    "svc2.num":"02 / Commercial","svc2.title":"Jumeaux Numériques<br>Commerciaux","svc2.body":"Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.",
-    "svc3.num":"03 / Plans","svc3.title":"Plans d'étage<br>Schématiques","svc3.body":"Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.",
-    "svc4.num":"04 / Découverte","svc4.title":"Intégration Google<br>Street View","svc4.body":"Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.",
+    "svc.intro":"Des solutions d'imagerie 3D complètes pour les professionnels de l'immobilier à Montréal — du condo résidentiel aux grands espaces commerciaux.",
+    "svc1.num":"01 / Résidentiel","svc1.title":"Visites Virtuelles<br>Résidentielles","svc1.body":"Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution.",
+    "svc2.num":"02 / Commercial","svc2.title":"Jumeaux Numériques<br>Commerciaux","svc2.body":"Documentation 3D entreprise pour commerces, bureaux et espaces communs.",
+    "svc3.num":"03 / Plans","svc3.title":"Plans d'étage<br>Schématiques","svc3.body":"Plans précis à 99 %, générés par IA à partir de données 3D.",
+    "svc4.num":"04 / Découverte","svc4.title":"Intégration Google Street View","svc4.body":"Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans les résultats de recherche.",
+    "svc4.stat1":"Vues / mois","svc4.stat2":"Publication","svc4.stat3":"Boost local",
     "tech.label":"La Technologie","tech.h2":"Alimenté par un<br>matériel<br>d'exception.",
-    "tech1.num":"Fonctionnalité 01","tech1.title":"Résolution 8K<br>Cristalline","tech1.body":"Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique capturé avec précision professionnelle pour une expérience vraiment immersive.",
-    "tech2.num":"Fonctionnalité 02","tech2.title":"Bouclier de<br>Confidentialité IA","tech2.body":"La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.",
-    "tech3.num":"Fonctionnalité 03","tech3.title":"Vue Dollhouse<br>en 3D","tech3.body":"La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales.",
-    "tech4.num":"Fonctionnalité 04","tech4.title":"Matériel<br>Insta360 X5","tech4.body":"L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.",
-    "quote.text":"« Chaque propriété mérite d'être vécue, pas seulement décrite. »","quote.attr":"3D Virtuals — Studio Immobilier Immersif de Montréal",
+    "tech.intro":"Chaque outil de notre arsenal a été sélectionné pour offrir la qualité la plus élevée du marché montréalais — sans compromis.",
+    "tech1.num":"Fonctionnalité 01","tech1.title":"Résolution 8K Cristalline","tech1.body":"Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique capturé avec précision professionnelle.",
+    "tech2.num":"Fonctionnalité 02","tech2.title":"Bouclier Confidentialité IA","tech2.body":"La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Imagerie conforme au RGPD, intégrée nativement.",
+    "tech3.num":"Fonctionnalité 03","tech3.title":"Vue Dollhouse en 3D","tech3.body":"La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales.",
+    "tech4.num":"Fonctionnalité 04","tech4.title":"Matériel Insta360 X5","tech4.body":"L'Insta360 X5 capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.",
+    "quote.text":"Chaque propriété mérite d'être vécue, pas seulement décrite.","quote.attr":"3D Virtuals — Studio Immobilier Immersif de Montréal",
     "contact.label":"Commencer","contact.h2":"Visitons<br>votre espace.","contact.desc":"Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.",
     "contact.addr_lbl":"Adresse","contact.phone_lbl":"Téléphone","contact.email_lbl":"Courriel",
-    "form.title":"Demande de devis",
+    "form.title":"Demande de devis","form.badge":"Réponse sous 24h",
     "form.name_lbl":"Nom complet","form.name_ph":"Jean Tremblay",
-    "form.email_lbl":"Adresse courriel","form.email_ph":"jean@immobilier.com",
-    "form.phone_lbl":"Numéro de téléphone",
-    "form.sqft_lbl":"Superficie (pi²)","form.sqft_ph":"ex. 1200",
+    "form.email_lbl":"Courriel","form.email_ph":"jean@immobilier.com",
+    "form.phone_lbl":"Téléphone","form.sqft_lbl":"Superficie (pi²)","form.sqft_ph":"ex. 1200",
     "form.addr_lbl":"Adresse de la propriété","form.addr_ph":"123 Rue Principale, Montréal",
     "form.service_lbl":"Type de service","form.service_ph":"Choisir un service",
     "form.opt1":"Visite résidentielle","form.opt2":"Jumeau numérique commercial","form.opt3":"Plan d'étage schématique","form.opt4":"Intégration Google Street View",
     "form.submit":"Envoyer la demande →","form.sending":"Envoi en cours…","form.done":"✓ Demande envoyée",
-    "form.err_name":"Ce champ est obligatoire.","form.err_email":"Adresse courriel invalide.","form.err_phone":"Veuillez entrer un numéro à 10 chiffres.","form.err_sqft":"Veuillez entrer la superficie.","form.err_addr":"Ce champ est obligatoire.","form.err_service":"Veuillez choisir un service.",
+    "form.err_name":"Ce champ est obligatoire.","form.err_email":"Adresse courriel invalide.","form.err_phone":"Numéro à 10 chiffres requis.","form.err_sqft":"Veuillez entrer la superficie.","form.err_addr":"Ce champ est obligatoire.","form.err_service":"Veuillez choisir un service.",
     "form.success_text":"Merci ! Votre demande a été envoyée.","form.success_sub":"Notre équipe vous contactera dans les 24 heures.",
-    "footer.desc":"Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.",
+    "footer.desc":"Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais.",
     "footer.nav_title":"Navigation","footer.nav1":"Accueil","footer.nav2":"Nos services","footer.nav3":"Technologie","footer.nav4":"Nous joindre",
     "footer.svc_title":"Services","footer.svc1":"Visites résidentielles","footer.svc2":"Jumeaux numériques","footer.svc3":"Plans d'étage","footer.svc4":"Google Street View",
+    "footer.contact_title":"Contact","footer.quote_link":"Obtenir un devis",
     "footer.copy":"© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.","footer.tax":"Aucune TPS / TVQ perçue — petit fournisseur"
   },
   en:{
@@ -527,241 +496,115 @@ var T = {
     "marq.twin":"Digital Twins","marq.plan":"Floor Plans","marq.priv":"AI Privacy","marq.doll":"Dollhouse 3D",
     "stats.res":"Matterport Resolution","stats.acc":"Floor Plan Accuracy","stats.cov":"Immersive Coverage","stats.loc":"Montreal-Based Team",
     "svc.label":"What We Do","svc.h2":"Four ways to<br>showcase space.",
-    "svc1.num":"01 / Residential","svc1.title":"Residential<br>Virtual Tours","svc1.body":"Immersive 8K Matterport walkthroughs for condos and houses. Engage potential buyers with interactive floor plans and high-resolution imagery that sells.",
-    "svc2.num":"02 / Commercial","svc2.title":"Commercial<br>Digital Twins","svc2.body":"Enterprise-grade 3D documentation for retail, office, and amenity spaces. Built for property managers and facility planners who demand precision.",
-    "svc3.num":"03 / Floor Plans","svc3.title":"Schematic<br>Floor Plans","svc3.body":"AI-powered 99% accurate black-and-white floor plans from 3D scan data. Architectural-grade documentation, zero drafting time.",
-    "svc4.num":"04 / Discovery","svc4.title":"Google Street<br>View Integration","svc4.body":"One-click publishing to Google Maps. Boost local SEO — your virtual tours appear directly in Google Maps and Search results.",
+    "svc.intro":"Complete 3D imaging solutions for real estate professionals in Montreal — from residential condos to large commercial spaces.",
+    "svc1.num":"01 / Residential","svc1.title":"Residential<br>Virtual Tours","svc1.body":"Immersive 8K Matterport walkthroughs for condos and houses. Engage buyers with interactive floor plans and high-resolution imagery.",
+    "svc2.num":"02 / Commercial","svc2.title":"Commercial<br>Digital Twins","svc2.body":"Enterprise-grade 3D documentation for retail, office, and amenity spaces.",
+    "svc3.num":"03 / Floor Plans","svc3.title":"Schematic<br>Floor Plans","svc3.body":"AI-powered 99% accurate floor plans generated from 3D scan data.",
+    "svc4.num":"04 / Discovery","svc4.title":"Google Street View Integration","svc4.body":"One-click publishing to Google Maps. Boost local SEO — your virtual tours appear directly in Google Maps and Search results.",
+    "svc4.stat1":"Monthly views","svc4.stat2":"Publishing","svc4.stat3":"Local SEO",
     "tech.label":"The Technology","tech.h2":"Built on<br>extraordinary<br>hardware.",
-    "tech1.num":"Feature 01","tech1.title":"8K Crystal-<br>Clear Resolution","tech1.body":"Crystal-clear 8K Matterport digital twins provide unparalleled clarity and detail. Every corner, texture, and feature captured with professional-grade precision.",
-    "tech2.num":"Feature 02","tech2.title":"AI-Powered<br>Privacy Shield","tech2.body":"Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging — built-in, not bolted-on.",
-    "tech3.num":"Feature 03","tech3.title":"Dollhouse<br>3D Viewing","tech3.body":"Interactive dollhouse perspective lets viewers explore properties from a bird's-eye view. Understand spatial relationships instantly.",
-    "tech4.num":"Feature 04","tech4.title":"Insta360 X5<br>Hardware","tech4.body":"Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport's processing engine, it delivers unmatched quality in the Montreal market.",
-    "quote.text":"\"Every property deserves to be experienced, not just described.\"","quote.attr":"3D Virtuals — Montreal's Immersive Real Estate Studio",
+    "tech.intro":"Every tool in our arsenal was selected to deliver the highest quality in the Montreal market — without compromise.",
+    "tech1.num":"Feature 01","tech1.title":"8K Crystal-Clear Resolution","tech1.body":"Crystal-clear 8K Matterport digital twins provide unparalleled clarity. Every corner, texture, and feature captured with professional-grade precision.",
+    "tech2.num":"Feature 02","tech2.title":"AI-Powered Privacy Shield","tech2.body":"Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging — built-in, not bolted-on.",
+    "tech3.num":"Feature 03","tech3.title":"Dollhouse 3D Viewing","tech3.body":"Interactive dollhouse perspective lets viewers explore properties from above. Understand spatial relationships instantly.",
+    "tech4.num":"Feature 04","tech4.title":"Insta360 X5 Hardware","tech4.body":"Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport's engine, it delivers unmatched quality in Montreal.",
+    "quote.text":"Every property deserves to be experienced, not just described.","quote.attr":"3D Virtuals — Montreal's Immersive Real Estate Studio",
     "contact.label":"Get Started","contact.h2":"Let's tour<br>your space.","contact.desc":"Request a quote and one of our imaging specialists will reach out within 24 hours. No GST / QST collected for small supplier services.",
     "contact.addr_lbl":"Address","contact.phone_lbl":"Phone","contact.email_lbl":"Email",
-    "form.title":"Request a Quote",
+    "form.title":"Request a Quote","form.badge":"Response within 24h",
     "form.name_lbl":"Full Name","form.name_ph":"Jane Smith",
-    "form.email_lbl":"Email Address","form.email_ph":"jane@realty.com",
-    "form.phone_lbl":"Phone Number",
-    "form.sqft_lbl":"Square Footage (sq ft)","form.sqft_ph":"e.g. 1200",
+    "form.email_lbl":"Email","form.email_ph":"jane@realty.com",
+    "form.phone_lbl":"Phone","form.sqft_lbl":"Square Footage (sq ft)","form.sqft_ph":"e.g. 1200",
     "form.addr_lbl":"Property Address","form.addr_ph":"123 Main St, Montreal",
     "form.service_lbl":"Service Type","form.service_ph":"Select a service",
     "form.opt1":"Residential Tour","form.opt2":"Commercial Digital Twin","form.opt3":"Schematic Floor Plan","form.opt4":"Google Street View Integration",
     "form.submit":"Request Quote →","form.sending":"Sending…","form.done":"✓ Quote Requested",
-    "form.err_name":"This field is required.","form.err_email":"Invalid email address.","form.err_phone":"Please enter a valid 10-digit phone number.","form.err_sqft":"Please enter the square footage.","form.err_addr":"This field is required.","form.err_service":"Please select a service.",
+    "form.err_name":"This field is required.","form.err_email":"Invalid email address.","form.err_phone":"Please enter a valid 10-digit number.","form.err_sqft":"Please enter the square footage.","form.err_addr":"This field is required.","form.err_service":"Please select a service.",
     "form.success_text":"Thank you! Your request has been sent.","form.success_sub":"Our team will reach out to you within 24 hours.",
-    "footer.desc":"Professional 3D virtual tours and digital twins for Montreal real estate. Serving realtors and property managers with 8K Matterport imaging.",
+    "footer.desc":"Professional 3D virtual tours and digital twins for Montreal real estate.",
     "footer.nav_title":"Navigation","footer.nav1":"Home","footer.nav2":"Our Services","footer.nav3":"Technology","footer.nav4":"Contact Us",
     "footer.svc_title":"Services","footer.svc1":"Residential Tours","footer.svc2":"Commercial Digital Twins","footer.svc3":"Floor Plans","footer.svc4":"Google Street View",
+    "footer.contact_title":"Contact","footer.quote_link":"Get a Quote",
     "footer.copy":"© 2025 3D Virtuals. All rights reserved. Proudly serving Montreal.","footer.tax":"No GST / QST collected — small supplier"
   }
 };
-
-var currentLang = "fr";
-
-/* ── setLang ── */
-window.setLang = function(lang) {
-  currentLang = lang;
-  var dict = T[lang];
-  document.documentElement.lang = lang;
-  document.getElementById("btn-en").classList.toggle("active", lang==="en");
-  document.getElementById("btn-fr").classList.toggle("active", lang==="fr");
-  document.querySelectorAll("[data-i18n]").forEach(function(el){
-    var k = el.getAttribute("data-i18n");
-    if(dict[k]!==undefined) el.innerHTML = dict[k];
-  });
-  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){
-    var k = el.getAttribute("data-i18n-ph");
-    if(dict[k]!==undefined) el.placeholder = dict[k];
-  });
-  /* update error labels */
-  var em = {
-    "err-name":dict["form.err_name"],
-    "err-email":dict["form.err_email"],
-    "err-phone":dict["form.err_phone"],
-    "err-sqft":dict["form.err_sqft"],
-    "err-address":dict["form.err_addr"],
-    "err-service":dict["form.err_service"]
-  };
-  Object.keys(em).forEach(function(id){
-    var el=document.getElementById(id);
-    if(el && em[id]) el.textContent=em[id];
-  });
-  /* update success text if visible */
-  var st=document.getElementById("form-success-text"), ss=document.getElementById("form-success-sub");
-  if(st) st.textContent = dict["form.success_text"]||"Thank you! Your request has been sent.";
-  if(ss) ss.textContent = dict["form.success_sub"]||"Our team will reach out to you within 24 hours.";
-  /* flash */
-  document.body.style.opacity="0.88";
-  setTimeout(function(){document.body.style.opacity="1";},60);
+var lang="fr";
+window.setLang=function(l){
+  lang=l;var d=T[l];
+  document.documentElement.lang=l;
+  document.getElementById("btn-en").classList.toggle("active",l==="en");
+  document.getElementById("btn-fr").classList.toggle("active",l==="fr");
+  document.querySelectorAll("[data-i18n]").forEach(function(el){var k=el.getAttribute("data-i18n");if(d[k]!==undefined)el.innerHTML=d[k];});
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){var k=el.getAttribute("data-i18n-ph");if(d[k]!==undefined)el.placeholder=d[k];});
+  var em={"err-name":d["form.err_name"],"err-email":d["form.err_email"],"err-phone":d["form.err_phone"],"err-sqft":d["form.err_sqft"],"err-address":d["form.err_addr"],"err-service":d["form.err_service"]};
+  Object.keys(em).forEach(function(id){var el=document.getElementById(id);if(el&&em[id])el.textContent=em[id];});
+  var st=document.getElementById("form-success-text"),ss=document.getElementById("form-success-sub");
+  if(st)st.textContent=d["form.success_text"];if(ss)ss.textContent=d["form.success_sub"];
+  document.body.style.opacity="0.9";setTimeout(function(){document.body.style.opacity="1";},55);
 };
-
-/* ── Scroll reveal ── */
 function initReveal(){
   var els=document.querySelectorAll(".reveal");
-  if(!window.IntersectionObserver){els.forEach(function(el){el.classList.add("in");});return;}
-  var io=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});
-  },{threshold:0.1});
-  els.forEach(function(el,i){el.style.transitionDelay=((i%5)*0.08)+"s";io.observe(el);});
+  if(!window.IntersectionObserver){els.forEach(function(e){e.classList.add("in");});return;}
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:0.07});
+  els.forEach(function(el,i){el.style.transitionDelay=((i%4)*0.06)+"s";io.observe(el);});
 }
-
-/* ── Nav ── */
 function initNav(){
   var nav=document.getElementById("nav");
-  window.addEventListener("scroll",function(){
-    nav.classList.toggle("scrolled",window.scrollY>60);
-  },{passive:true});
+  window.addEventListener("scroll",function(){nav.classList.toggle("scrolled",window.scrollY>44);},{passive:true});
 }
-
-/* ── Cursor ── */
 function initCursor(){
-  var cursor=document.getElementById("cursor");
-  if(!cursor||!window.matchMedia("(pointer:fine)").matches) return;
-  document.addEventListener("mousemove",function(e){
-    cursor.style.left=e.clientX+"px";cursor.style.top=e.clientY+"px";
-  });
-  document.querySelectorAll("a,button,.svc-card,.tech-card").forEach(function(el){
-    el.addEventListener("mouseenter",function(){cursor.classList.add("hov");});
-    el.addEventListener("mouseleave",function(){cursor.classList.remove("hov");});
+  var c=document.getElementById("cursor");
+  if(!c||!window.matchMedia("(pointer:fine)").matches)return;
+  document.addEventListener("mousemove",function(e){c.style.left=e.clientX+"px";c.style.top=e.clientY+"px";});
+  document.querySelectorAll("a,button,.svc-card,.tech-cell,.svc-wide").forEach(function(el){
+    el.addEventListener("mouseenter",function(){c.classList.add("hov");});
+    el.addEventListener("mouseleave",function(){c.classList.remove("hov");});
   });
 }
-
-/* ── Form ── */
 function initForm(){
-  var btn=document.getElementById("form-submit");
-  if(!btn) return;
-
-  function getEl(id){return document.getElementById(id);}
-  function setErr(inputId,errId,show){
-    var el=getEl(inputId), er=getEl(errId);
-    if(el) el.classList.toggle("err",show);
-    if(er) er.classList.toggle("show",show);
-  }
-
-  /* Live clear on input */
-  [["f-name","err-name"],["f-email","err-email"],["f-phone","err-phone"],
-   ["f-sqft","err-sqft"],["f-address","err-address"],["f-service","err-service"]
-  ].forEach(function(pair){
-    var el=getEl(pair[0]);
-    if(!el) return;
-    el.addEventListener("input",function(){setErr(pair[0],pair[1],false);});
-    el.addEventListener("change",function(){setErr(pair[0],pair[1],false);});
+  var btn=document.getElementById("form-submit");if(!btn)return;
+  function g(id){return document.getElementById(id);}
+  function err(iId,eId,show){var el=g(iId),er=g(eId);if(el)el.classList.toggle("err",show);if(er)er.classList.toggle("show",show);}
+  [["f-name","err-name"],["f-email","err-email"],["f-phone","err-phone"],["f-sqft","err-sqft"],["f-address","err-address"],["f-service","err-service"]].forEach(function(p){
+    var el=g(p[0]);if(!el)return;
+    el.addEventListener("input",function(){err(p[0],p[1],false);});
+    el.addEventListener("change",function(){err(p[0],p[1],false);});
   });
-
-  /* Phone auto-format */
-  var phoneEl=getEl("f-phone");
-  if(phoneEl){
-    phoneEl.addEventListener("input",function(){
-      var d=phoneEl.value.replace(/\D/g,"").slice(0,10), fmt="";
-      if(d.length===0) fmt="";
-      else if(d.length<=3) fmt="("+d;
-      else if(d.length<=6) fmt="("+d.slice(0,3)+") "+d.slice(3);
-      else fmt="("+d.slice(0,3)+") "+d.slice(3,6)+"-"+d.slice(6);
-      phoneEl.value=fmt;
-    });
-  }
-
-  /* Sqft — digits only */
-  var sqftEl=getEl("f-sqft");
-  if(sqftEl){
-    sqftEl.addEventListener("input",function(){
-      sqftEl.value=sqftEl.value.replace(/[^0-9]/g,"");
-    });
-  }
-
-  function validateEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}
-
+  var ph=g("f-phone");
+  if(ph){ph.addEventListener("input",function(){var d=ph.value.replace(/\D/g,"").slice(0,10),f="";if(!d.length)f="";else if(d.length<=3)f="("+d;else if(d.length<=6)f="("+d.slice(0,3)+") "+d.slice(3);else f="("+d.slice(0,3)+") "+d.slice(3,6)+"-"+d.slice(6);ph.value=f;});}
+  var sq=g("f-sqft");if(sq){sq.addEventListener("input",function(){sq.value=sq.value.replace(/[^0-9]/g,"");});}
+  function vEmail(v){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}
   btn.addEventListener("click",function(){
-    var dict=T[currentLang], valid=true;
-
-    /* Name */
-    var name=getEl("f-name");
-    var nameOk=name&&name.value.trim().length>0;
-    setErr("f-name","err-name",!nameOk);
-    if(!nameOk) valid=false;
-
-    /* Email */
-    var email=getEl("f-email");
-    var emailOk=email&&email.value.trim()&&validateEmail(email.value);
-    setErr("f-email","err-email",!emailOk);
-    if(!emailOk) valid=false;
-
-    /* Phone — 10 digits */
-    var phone=getEl("f-phone");
-    var digits=phone?phone.value.replace(/\D/g,""):"";
-    var phoneOk=digits.length===10;
-    setErr("f-phone","err-phone",!phoneOk);
-    if(!phoneOk) valid=false;
-
-    /* Sqft */
-    var sqft=getEl("f-sqft");
-    var sqftOk=sqft&&sqft.value.trim()&&parseInt(sqft.value,10)>0;
-    setErr("f-sqft","err-sqft",!sqftOk);
-    if(!sqftOk) valid=false;
-
-    /* Address */
-    var address=getEl("f-address");
-    var addrOk=address&&address.value.trim().length>0;
-    setErr("f-address","err-address",!addrOk);
-    if(!addrOk) valid=false;
-
-    /* Service */
-    var service=getEl("f-service");
-    var svcOk=service&&service.value;
-    setErr("f-service","err-service",!svcOk);
-    if(!svcOk) valid=false;
-
-    if(!valid){
-      btn.classList.remove("form-shake");
-      void btn.offsetWidth;
-      btn.classList.add("form-shake");
-      setTimeout(function(){btn.classList.remove("form-shake");},450);
-      var firstErr=document.querySelector(".form-input.err,.form-select.err");
-      if(firstErr) firstErr.scrollIntoView({behavior:"smooth",block:"center"});
+    var d=T[lang],ok=true;
+    var nm=g("f-name");var nmOk=nm&&nm.value.trim().length>0;err("f-name","err-name",!nmOk);if(!nmOk)ok=false;
+    var em=g("f-email");var emOk=em&&em.value.trim()&&vEmail(em.value);err("f-email","err-email",!emOk);if(!emOk)ok=false;
+    var ph2=g("f-phone");var phOk=ph2&&ph2.value.replace(/\D/g,"").length===10;err("f-phone","err-phone",!phOk);if(!phOk)ok=false;
+    var sq2=g("f-sqft");var sqOk=sq2&&sq2.value.trim()&&parseInt(sq2.value,10)>0;err("f-sqft","err-sqft",!sqOk);if(!sqOk)ok=false;
+    var ad=g("f-address");var adOk=ad&&ad.value.trim().length>0;err("f-address","err-address",!adOk);if(!adOk)ok=false;
+    var sv=g("f-service");var svOk=sv&&sv.value;err("f-service","err-service",!svOk);if(!svOk)ok=false;
+    if(!ok){
+      btn.classList.remove("form-shake");void btn.offsetWidth;btn.classList.add("form-shake");
+      setTimeout(function(){btn.classList.remove("form-shake");},380);
+      var fe=document.querySelector(".fi.err,.fs.err");if(fe)fe.scrollIntoView({behavior:"smooth",block:"center"});
       return;
     }
-
-    /* Submit */
-    var successBox=getEl("form-success"),successText=getEl("form-success-text"),successSub=getEl("form-success-sub");
-    successBox.classList.remove("show");
-    btn.textContent=dict["form.sending"];
-    btn.style.background="#12a354";
-    btn.disabled=true;
-
+    var sb=g("form-success"),st=g("form-success-text"),ss=g("form-success-sub");
+    sb.classList.remove("show");btn.textContent=d["form.sending"];btn.style.background="#12a354";btn.disabled=true;
     setTimeout(function(){
-      btn.textContent=dict["form.done"];
-      successText.textContent=dict["form.success_text"]||"Thank you! Your request has been sent.";
-      successSub.textContent=dict["form.success_sub"]||"Our team will reach out to you within 24 hours.";
-      successBox.classList.add("show");
-
+      btn.textContent=d["form.done"];
+      if(st)st.textContent=d["form.success_text"];if(ss)ss.textContent=d["form.success_sub"];
+      sb.classList.add("show");
       setTimeout(function(){
-        btn.innerHTML=dict["form.submit"];
-        btn.style.background="";
-        btn.disabled=false;
-        /* Reset */
-        ["f-name","f-email","f-phone","f-sqft","f-address"].forEach(function(id){
-          var el=getEl(id); if(el) el.value="";
-        });
-        getEl("f-service").selectedIndex=0;
-        setTimeout(function(){successBox.classList.remove("show");},6000);
+        btn.innerHTML=d["form.submit"];btn.style.background="";btn.disabled=false;
+        ["f-name","f-email","f-phone","f-sqft","f-address"].forEach(function(id){var el=g(id);if(el)el.value="";});
+        g("f-service").selectedIndex=0;setTimeout(function(){sb.classList.remove("show");},6000);
       },2500);
     },900);
   });
 }
-
-/* ── Boot ── */
-document.body.style.transition="opacity .25s";
-document.addEventListener("DOMContentLoaded",function(){
-  setLang("fr");
-  initReveal();
-  initNav();
-  initCursor();
-  initForm();
-});
-
+document.body.style.transition="opacity .18s";
+document.addEventListener("DOMContentLoaded",function(){setLang("fr");initReveal();initNav();initCursor();initForm();});
 })();
 </script>
-
 </body>
 </html>
