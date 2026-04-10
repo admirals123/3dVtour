@@ -905,7 +905,7 @@ function initForm() {
       return;
     }
 
-    /* All valid — submit */
+    /* All valid — submit to Formspree */
     var successBox  = document.getElementById("form-success");
     var successText = document.getElementById("form-success-text");
     var successSub  = document.getElementById("form-success-sub");
@@ -914,9 +914,22 @@ function initForm() {
     btn.textContent = dict["form.sending"];
     btn.style.background = "#12a354";
     btn.disabled = true;
-    setTimeout(function() {
+
+    var formData = new FormData();
+    formData.append("name", name.value.trim());
+    formData.append("email", email.value.trim());
+    formData.append("phone", phone.value.trim());
+    formData.append("sqft", sqft.value.trim());
+    formData.append("address", address.value.trim());
+    formData.append("service", service.options[service.selectedIndex].text);
+
+    fetch("https://formspree.io/f/mnjoogqg", {
+      method: "POST",
+      body: formData,
+      headers: { "Accept": "application/json" }
+    }).then(function(response) {
+      if (!response.ok) throw new Error("Form submission failed");
       btn.textContent = dict["form.done"];
-      /* Show success message */
       successText.textContent = dict["form.success_text"] || "Thank you! Your request has been sent.";
       successSub.textContent  = dict["form.success_sub"]  || "Our team will reach out to you within 24 hours.";
       successBox.classList.add("show");
@@ -924,17 +937,20 @@ function initForm() {
         btn.innerHTML = dict["form.submit"];
         btn.style.background = "";
         btn.disabled = false;
-        /* Reset form */
-        document.getElementById("f-name").value = "";
-        document.getElementById("f-email").value = "";
-        document.getElementById("f-phone").value = "";
-        document.getElementById("f-sqft").value = "";
-        document.getElementById("f-address").value = "";
-        document.getElementById("f-service").selectedIndex = 0;
-        /* Hide success after 6s */
+        name.value = "";
+        email.value = "";
+        phone.value = "";
+        sqft.value = "";
+        address.value = "";
+        service.selectedIndex = 0;
         setTimeout(function(){ successBox.classList.remove("show"); }, 6000);
       }, 2500);
-    }, 900);
+    }).catch(function() {
+      btn.textContent = dict["form.submit"];
+      btn.style.background = "";
+      btn.disabled = false;
+      alert(currentLang === "fr" ? "Erreur lors de l'envoi. Veuillez réessayer." : "Submission failed. Please try again.");
+    });
   });
 }
 
