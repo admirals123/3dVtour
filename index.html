@@ -1,973 +1,1360 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3D Virtuals — Visites Virtuelles 3D | Montréal</title>
-<meta name="description" content="Visites virtuelles 8K Matterport et jumeaux numériques pour l'immobilier montréalais. Plans d'étage, Google Street View, confidentialité IA. (514) 919-1875" />
-<meta property="og:title" content="3D Virtuals — Visites Virtuelles 3D | Montréal" />
-<meta property="og:description" content="Visites virtuelles 8K Matterport professionnelles pour courtiers immobiliers de Montréal." />
-<meta property="og:type" content="website" />
-<meta name="theme-color" content="#0061FE" />
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   DESIGN TOKENS
-   ============================================================ */
-:root {
-  --ink:       #1E1919;
-  --canvas:    #F7F5F2;
-  --blue:      #0061FE;
-  --pale-blue: #DBE8FF;
-  --blush:     #FFD6D6;
-  --sage:      #D3E8D4;
-  --slate:     #2C2C2E;
-  --mid:       #6B6B6B;
-  --yellow:    #FFE566;
-  --rule:      rgba(30,25,25,.12);
-  --ease-el:   cubic-bezier(0.34,1.56,0.64,1);
-  --ease-out:  cubic-bezier(0.16,1,0.3,1);
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ============================================================
-   RESET
-   ============================================================ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;font-size:16px;scroll-padding-top:80px;}
-body{
-  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
-  background:var(--canvas);
-  color:var(--ink);
-  overflow-x:hidden;
-}
-
-/* ============================================================
-   CURSOR
-   ============================================================ */
-@media(pointer:fine){
-  body{cursor:none;}
-  #cursor{
-    width:12px;height:12px;background:var(--blue);border-radius:50%;
-    position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
-    transform:translate(-50%,-50%);
-    transition:width .25s var(--ease-el),height .25s var(--ease-el);
-    mix-blend-mode:multiply;
+  :root {
+    --blue: #2563eb;
+    --blue-light: #3b82f6;
+    --blue-dark: #1d4ed8;
+    --slate: #cbd5e1;
+    --slate-dim: #94a3b8;
+    --white: #ffffff;
+    --black: #0a0a0f;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.1);
+    --border-hover: rgba(255,255,255,0.2);
+    --font-display: 'Montserrat', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --max-w: 1200px;
   }
-  #cursor.hov{width:48px;height:48px;opacity:.3;}
-}
-@media(pointer:coarse){#cursor{display:none;}}
 
-/* ============================================================
-   KEYFRAMES
-   ============================================================ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-@keyframes pulseR{0%{transform:scale(.7);opacity:.4;}100%{transform:scale(1.3);opacity:0;}}
-@keyframes orbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-28px);}}
+  html { scroll-behavior: smooth; }
 
-/* Scroll reveal */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity .75s var(--ease-out),transform .75s var(--ease-out);}
-.reveal.in{opacity:1;transform:translateY(0);}
+  body {
+    font-family: var(--font-body);
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
 
-/* ============================================================
-   NAV
-   ============================================================ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  padding:0 5vw;height:72px;
-  display:flex;align-items:center;justify-content:space-between;
-  transition:background .4s;
-}
-nav.scrolled{background:rgba(247,245,242,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);}
-.nav-logo{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;color:var(--ink);text-decoration:none;flex-shrink:0;}
-.nav-logo span{color:var(--blue);}
-.nav-links{display:flex;gap:2rem;list-style:none;}
-.nav-links a{font-size:.85rem;font-weight:500;color:var(--ink);text-decoration:none;opacity:.7;transition:opacity .2s;}
-.nav-links a:hover{opacity:1;}
-@media(max-width:700px){.nav-links{display:none;}}
-.nav-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(10,10,15,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
 
-/* Lang toggle */
-.lang-toggle{display:flex;align-items:center;background:rgba(30,25,25,.08);border-radius:100px;padding:3px;}
-.lang-btn{
-  font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:.36rem .8rem;border-radius:100px;border:none;
-  background:transparent;color:var(--mid);cursor:pointer;
-  transition:background .2s,color .2s;
-}
-.lang-btn.active{background:var(--ink);color:#fff;}
-.lang-btn:not(.active):hover{color:var(--ink);}
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    text-decoration: none;
+  }
 
-/* CTA */
-.nav-cta{
-  background:var(--ink);color:#fff;
-  font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  padding:.6rem 1rem;border-radius:100px;text-decoration:none;
-  white-space:nowrap;max-width:130px;text-align:center;line-height:1.3;
-  display:inline-block;
-  transition:background .2s var(--ease-el),transform .2s var(--ease-el);
-}
-.nav-cta:hover{background:var(--blue);transform:scale(1.04);}
+  .nav-logo span { color: var(--blue-light); }
 
-/* ============================================================
-   HERO
-   ============================================================ */
-#hero{
-  min-height:max(100svh,600px);background:var(--canvas);
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:0 5vw 9vh;position:relative;overflow:hidden;
-}
-.grid-lines{position:absolute;inset:0;pointer-events:none;display:grid;grid-template-columns:repeat(6,1fr);}
-.grid-lines span{border-right:1px solid var(--rule);height:100%;}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;pointer-events:none;}
-.orb-1{width:600px;height:600px;background:var(--pale-blue);top:-120px;right:-80px;animation:orbFloat 8s ease-in-out infinite;}
-.orb-2{width:400px;height:400px;background:var(--blush);bottom:10%;left:-60px;animation:orbFloat 10s ease-in-out infinite reverse;}
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
 
-.hero-eyebrow{
-  font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--blue);margin-bottom:2rem;
-  animation:fadeUp .8s .3s var(--ease-out) both;
-}
-.hero-headline{
-  font-size:clamp(3rem,9vw,9rem);font-weight:900;line-height:.96;
-  letter-spacing:-.04em;color:var(--ink);max-width:16ch;
-  animation:fadeUp 1s .5s var(--ease-out) both;
-}
-.hero-headline em{font-style:normal;color:var(--blue);}
-.hero-sub-row{
-  margin-top:3.5rem;display:flex;align-items:flex-end;
-  justify-content:space-between;gap:2rem;flex-wrap:wrap;
-  animation:fadeUp .9s .8s var(--ease-out) both;
-  padding-bottom:clamp(70px,8vh,100px);
-}
-.hero-sub{font-size:1.1rem;font-weight:400;color:var(--mid);max-width:38ch;line-height:1.65;}
-.hero-actions{display:flex;gap:1rem;align-items:center;flex-shrink:0;}
+  .nav-links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
 
-.btn-primary{
-  background:var(--blue);color:#fff;
-  font-size:.85rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  padding:1rem 2rem;border-radius:100px;border:none;
-  text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;
-  transition:transform .25s var(--ease-el),box-shadow .25s;cursor:pointer;
-}
-.btn-primary:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 16px 40px rgba(0,97,254,.3);}
-.btn-ghost{
-  background:transparent;color:var(--ink);font-size:.85rem;font-weight:600;
-  padding:1rem 1.5rem;border:1.5px solid var(--rule);border-radius:100px;
-  text-decoration:none;transition:border-color .2s,background .2s,color .2s;cursor:pointer;
-}
-.btn-ghost:hover{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .nav-links a:hover { color: var(--white); }
 
-/* Marquee */
-.marquee-wrap{
-  position:absolute;bottom:0;left:0;right:0;overflow:hidden;
-  border-top:1px solid var(--rule);background:var(--canvas);padding:.9rem 0;
-}
-.marquee-track{display:flex;gap:4rem;white-space:nowrap;animation:marquee 20s linear infinite;width:max-content;}
-.marquee-track span{font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);flex-shrink:0;}
-.marquee-dot{color:var(--blue)!important;}
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
 
-/* ============================================================
-   SECTION BASE
-   ============================================================ */
-section{padding:12vh 5vw;position:relative;}
-.section-label{
-  font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--blue);margin-bottom:3rem;display:flex;align-items:center;gap:1rem;
-}
-.section-label::after{content:'';flex:1;height:1px;background:var(--rule);max-width:60px;}
-.section-h2{font-size:clamp(2.2rem,5vw,5.5rem);font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--ink);}
+  .lang-toggle {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--slate-dim);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    transition: color 0.2s;
+  }
+  .lang-toggle:hover { color: var(--white); }
 
-/* ============================================================
-   STATS
-   ============================================================ */
-#stats{
-  background:var(--ink);color:#fff;padding:6vh 0;
-  display:grid;grid-template-columns:repeat(4,1fr);
-}
-@media(max-width:700px){#stats{grid-template-columns:repeat(2,1fr);}}
-.stat-item{padding:2.5rem 2.5rem;border-right:1px solid rgba(255,255,255,.1);}
-.stat-item:last-child{border-right:none;}
-@media(max-width:700px){.stat-item:nth-child(2){border-right:none;}.stat-item:nth-child(3){border-right:1px solid rgba(255,255,255,.1);}}
-.stat-num{font-size:clamp(2.5rem,5vw,5rem);font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--yellow);}
-.stat-label{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.5);margin-top:.5rem;letter-spacing:.05em;text-transform:uppercase;}
+  .btn-primary {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--blue-light); transform: translateY(-1px); }
 
-/* ============================================================
-   SERVICES
-   ============================================================ */
-#services{background:var(--canvas);}
-.services-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:3.5rem;}
-@media(max-width:900px){.services-grid{grid-template-columns:1fr;}}
-.svc-card{
-  border-radius:22px;padding:2.5rem;
-  display:flex;flex-direction:column;justify-content:space-between;
-  min-height:320px;position:relative;overflow:hidden;
-  transition:transform .4s var(--ease-out);
-}
-.svc-card:hover{transform:translateY(-6px);}
-.svc-card:nth-child(1){grid-column:span 7;background:var(--pale-blue);}
-.svc-card:nth-child(2){grid-column:span 5;background:var(--ink);color:#fff;}
-.svc-card:nth-child(3){grid-column:span 4;background:var(--blush);}
-.svc-card:nth-child(4){grid-column:span 8;background:var(--sage);}
-@media(max-width:900px){
-  .svc-card:nth-child(1),.svc-card:nth-child(2),
-  .svc-card:nth-child(3),.svc-card:nth-child(4){grid-column:span 1;min-height:260px;}
-}
-.svc-number{font-size:.65rem;font-weight:700;letter-spacing:.2em;opacity:.4;text-transform:uppercase;}
-.svc-icon{font-size:2.5rem;line-height:1;margin-top:auto;margin-bottom:.75rem;}
-.svc-title{font-size:1.45rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:.6rem;}
-.svc-body{font-size:.85rem;line-height:1.65;opacity:.7;max-width:36ch;}
-.svc-arrow{
-  position:absolute;bottom:2rem;right:2rem;width:40px;height:40px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:1rem;
-  background:rgba(0,0,0,.08);transition:transform .25s var(--ease-el),background .2s;
-}
-.svc-card:nth-child(2) .svc-arrow{background:rgba(255,255,255,.12);}
-.svc-card:hover .svc-arrow{transform:translate(4px,-4px);background:var(--blue);color:#fff;}
+  /* ─── HERO ─── */
+  #hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
 
-/* ============================================================
-   TECHNOLOGY
-   ============================================================ */
-#technology{background:var(--canvas);padding-bottom:0;}
-.tech-intro{margin-bottom:5rem;}
-.tech-cards-stack{display:flex;flex-direction:column;gap:1.5rem;padding-bottom:12vh;}
-.tech-card{
-  border-radius:24px;padding:3.5rem;
-  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
-  position:sticky;top:90px;
-}
-@media(max-width:700px){.tech-card{grid-template-columns:1fr;gap:1.5rem;padding:2.5rem;}}
-.tech-card:nth-child(1){background:#1A1A2E;color:#fff;z-index:10;}
-.tech-card:nth-child(2){background:var(--pale-blue);z-index:11;}
-.tech-card:nth-child(3){background:var(--yellow);z-index:12;}
-.tech-card:nth-child(4){background:var(--ink);color:#fff;z-index:13;}
-.tech-card-num{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.4;margin-bottom:1.2rem;}
-.tech-card-title{font-size:clamp(1.8rem,3vw,3rem);font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:1rem;}
-.tech-card-body{font-size:.95rem;line-height:1.7;opacity:.7;max-width:42ch;}
-.tech-card-visual{
-  aspect-ratio:4/3;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;font-size:5rem;
-  background:rgba(255,255,255,.1);position:relative;overflow:hidden;
-}
-@media(max-width:700px){.tech-card-visual{display:none;}}
-.tech-card:nth-child(2) .tech-card-visual{background:rgba(0,0,0,.06);}
-.tech-card:nth-child(3) .tech-card-visual{background:rgba(0,0,0,.07);}
-.pulse-ring{
-  position:absolute;border-radius:50%;border:2px solid currentColor;opacity:.25;
-  animation:pulseR 2.4s ease-out infinite;
-}
-.pulse-ring:nth-child(2){width:90px;height:90px;}
-.pulse-ring:nth-child(3){animation-delay:.7s;width:130px;height:130px;}
-.pulse-ring:nth-child(4){animation-delay:1.4s;width:180px;height:180px;}
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+  }
 
-/* ============================================================
-   QUOTE
-   ============================================================ */
-#quote{background:var(--blue);color:#fff;padding:14vh 5vw;text-align:center;}
-.quote-text{
-  font-size:clamp(1.8rem,5vw,5rem);font-weight:900;
-  letter-spacing:-.04em;line-height:1.05;max-width:22ch;margin:0 auto 2.5rem;
-}
-.quote-attr{font-size:.78rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;opacity:.6;}
+  /* Fallback gradient when no video loads */
+  .hero-bg-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(37,99,235,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 80% at 20% 80%, rgba(59,130,246,0.08) 0%, transparent 60%),
+      linear-gradient(160deg, #0d1117 0%, #0a0a0f 100%);
+  }
 
-/* ============================================================
-   CONTACT
-   ============================================================ */
-#contact{background:var(--canvas);}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;margin-top:3.5rem;}
-@media(max-width:800px){.contact-grid{grid-template-columns:1fr;gap:3rem;}}
-.contact-left .section-h2{margin-bottom:1.25rem;}
-.contact-desc{color:var(--mid);font-size:1rem;line-height:1.7;max-width:40ch;margin-bottom:2.5rem;}
-.contact-info-row{display:flex;flex-direction:column;gap:1.25rem;}
-.contact-info-item{display:flex;align-items:flex-start;gap:1rem;}
-.ci-icon{width:38px;height:38px;border-radius:10px;background:var(--pale-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.ci-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.2rem;}
-.ci-value{font-size:.9rem;font-weight:500;color:var(--ink);text-decoration:none;}
-.ci-value:hover{color:var(--blue);}
-.quote-form{background:var(--ink);border-radius:26px;padding:3rem;color:#fff;}
-.form-title{font-size:1.5rem;font-weight:900;letter-spacing:-.03em;margin-bottom:1.75rem;}
-.form-group{margin-bottom:1.1rem;}
-.form-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);display:block;margin-bottom:.4rem;}
-.form-input,.form-select{
-  width:100%;background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.12);border-radius:10px;
-  padding:.85rem 1.1rem;color:#fff;font-size:.9rem;font-family:inherit;outline:none;
-  transition:border-color .2s,background .2s;
-}
-.form-input::placeholder{color:rgba(255,255,255,.3);}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
-input[type="number"]{-moz-appearance:textfield;}
-.form-input:focus,.form-select:focus{border-color:var(--blue);background:rgba(0,97,254,.08);}
-.form-select{appearance:none;}
-.form-select option{background:var(--slate);}
-.form-submit{
-  width:100%;margin-top:.75rem;padding:1.05rem;
-  background:var(--blue);color:#fff;border:none;border-radius:100px;
-  font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  cursor:pointer;transition:transform .25s var(--ease-el),box-shadow .25s,background .3s;
-}
-.form-submit:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,97,254,.4);}
-.form-success{
-  display:none;
-  margin-top:1.1rem;
-  padding:1rem 1.25rem;
-  border-radius:12px;
-  background:rgba(18,163,84,.15);
-  border:1px solid rgba(18,163,84,.3);
-  text-align:center;
-}
-.form-success.show{display:block;animation:fadeUp .5s var(--ease-out) both;}
-.form-success-icon{font-size:1.4rem;display:block;margin-bottom:.3rem;}
-.form-success-text{font-size:.88rem;font-weight:600;color:#6ee7a0;line-height:1.5;}
-.form-success-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.25rem;font-weight:400;}
-.form-input.error,.form-select.error{border-color:#ff4d4d!important;background:rgba(255,77,77,.1)!important;}
-.field-error{font-size:.68rem;font-weight:600;color:#ff6b6b;margin-top:.35rem;display:none;letter-spacing:.02em;}
-.field-error.show{display:block;}
-.form-shake{animation:shake .4s cubic-bezier(0.16,1,0.3,1);}
-@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+  /* Grid texture overlay */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.5) 70%, transparent 100%);
+  }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-footer{background:var(--ink);color:rgba(255,255,255,.5);padding:5rem 5vw 3rem;border-top:1px solid rgba(255,255,255,.06);}
-.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;margin-bottom:4rem;}
-@media(max-width:700px){.footer-top{grid-template-columns:1fr;gap:2rem;}}
-.footer-brand-name{font-size:1.3rem;font-weight:900;letter-spacing:-.03em;color:#fff;margin-bottom:.75rem;}
-.footer-brand-name span{color:var(--blue);}
-.footer-desc{font-size:.85rem;line-height:1.7;max-width:34ch;}
-.footer-col-title{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1.1rem;}
-.footer-links{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
-.footer-links a{font-size:.85rem;color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:#fff;}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;flex-wrap:wrap;gap:1rem;}
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,0.3) 0%,
+      rgba(0,0,0,0.45) 40%,
+      rgba(0,0,0,0.7) 100%
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 3rem;
+    width: 100%;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.75rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue-light);
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    font-weight: 300;
+    color: var(--slate);
+    max-width: 540px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+
+  .btn-glass {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-hover);
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .btn-glass:hover {
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-hero-primary {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--blue);
+    border: 1px solid transparent;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-hero-primary:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    position: relative;
+    z-index: 10;
+    background: rgba(37,99,235,0.12);
+    border-top: 1px solid rgba(59,130,246,0.2);
+    border-bottom: 1px solid rgba(59,130,246,0.2);
+    overflow: hidden;
+    padding: 0.85rem 0;
+    margin-top: -1px;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 4rem;
+    width: max-content;
+    animation: ticker 28s linear infinite;
+  }
+
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    white-space: nowrap;
+  }
+
+  .ticker-item::after {
+    content: '✦';
+    color: rgba(59,130,246,0.4);
+  }
+
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── STATS ─── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+  }
+
+  .stat-cell {
+    padding: 2.5rem 2rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat-cell:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-num span { color: var(--blue-light); }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 7rem 3rem; max-width: var(--max-w); margin: 0 auto; }
+
+  .section-full { max-width: none; padding-left: 0; padding-right: 0; }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px; height: 1px;
+    background: var(--blue-light);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  h2 em {
+    font-style: normal;
+    color: var(--blue-light);
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ─── SERVICES ─── */
+  .services-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    gap: 2rem;
+  }
+
+  .services-header .subtext {
+    font-size: 1rem;
+    color: var(--slate);
+    font-weight: 300;
+    max-width: 380px;
+    line-height: 1.7;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .service-card {
+    background: rgba(10,10,15,0.95);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(37,99,235,0.06) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .service-card:hover { background: rgba(15,15,25,0.98); }
+  .service-card:hover::before { opacity: 1; }
+
+  .service-num {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--slate-dim);
+  }
+
+  .service-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .service-desc {
+    font-size: 0.9rem;
+    color: var(--slate);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .service-arrow {
+    margin-top: auto;
+    font-size: 1.1rem;
+    color: var(--blue-light);
+    transition: transform 0.2s;
+  }
+
+  .service-card:hover .service-arrow { transform: translate(4px, -4px); }
+
+  /* ─── TECH ─── */
+  .tech-wrap {
+    background: rgba(255,255,255,0.015);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tech-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 7rem 3rem;
+  }
+
+  .tech-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+    margin-top: 4rem;
+  }
+
+  .tech-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tech-feat {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tech-feat:first-child { border-top: 1px solid var(--border); }
+
+  .tech-feat:hover .tech-feat-title { color: var(--blue-light); }
+
+  .tech-feat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: rgba(37,99,235,0.12);
+    border: 1px solid rgba(59,130,246,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .tech-feat-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    margin-bottom: 0.35rem;
+    transition: color 0.2s;
+  }
+
+  .tech-feat-desc {
+    font-size: 0.85rem;
+    color: var(--slate-dim);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .tech-visual {
+    position: sticky;
+    top: 6rem;
+  }
+
+  .tech-card {
+    background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(10,10,15,0.8) 100%);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .tech-card-glyph {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .tech-card-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+
+  .tech-card-desc {
+    font-size: 0.88rem;
+    color: var(--slate);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    background: rgba(37,99,235,0.12);
+    border: 1px solid rgba(59,130,246,0.25);
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+  }
+
+  /* ─── QUOTE ─── */
+  .quote-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 6rem 3rem;
+    text-align: center;
+  }
+
+  .quote-text {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    line-height: 1.3;
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .quote-attr {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+
+  /* ─── CONTACT ─── */
+  #contact {
+    scroll-margin-top: 80px;
+  }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-info { padding-top: 0.5rem; }
+
+  .contact-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-detail:first-of-type { border-top: 1px solid var(--border); margin-top: 2.5rem; }
+
+  .contact-icon {
+    width: 36px; height: 36px;
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .contact-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--slate-dim);
+    margin-bottom: 0.2rem;
+  }
+
+  .contact-val {
+    font-size: 0.95rem;
+    color: var(--slate);
+    font-weight: 300;
+  }
+
+  .contact-val a { color: var(--blue-light); text-decoration: none; }
+  .contact-val a:hover { text-decoration: underline; }
+
+  /* ─── FORM ─── */
+  .form-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .form-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.75rem;
+    color: var(--white);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group.full { grid-column: 1/-1; }
+
+  label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+
+  input, select, textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 300;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder, textarea::placeholder { color: rgba(148,163,184,0.4); }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue-light);
+    background: rgba(37,99,235,0.06);
+  }
+
+  select option { background: #0d1117; color: var(--white); }
+
+  textarea { resize: vertical; min-height: 100px; }
+
+  .form-submit {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    border-radius: 6px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .form-submit:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+  .form-note {
+    font-size: 0.72rem;
+    color: var(--slate-dim);
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+
+  /* ─── SUCCESS ─── */
+  .form-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 3rem 0;
+  }
+
+  .success-icon {
+    width: 52px; height: 52px;
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: 1.2rem;
+  }
+
+  .success-desc { font-size: 0.9rem; color: var(--slate); font-weight: 300; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 4rem 3rem 2.5rem;
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 3rem;
+  }
+
+  .footer-brand { max-width: 280px; }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+
+  .footer-logo span { color: var(--blue-light); }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    color: var(--slate-dim);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 1.25rem;
+  }
+
+  .footer-heading {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate-dim);
+    margin-bottom: 1.25rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .footer-links a {
+    font-size: 0.88rem;
+    color: var(--slate);
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--white); }
+
+  .footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .footer-copy {
+    font-size: 0.78rem;
+    color: var(--slate-dim);
+    font-weight: 300;
+  }
+
+  .footer-legal {
+    font-size: 0.72rem;
+    color: rgba(100,116,139,0.6);
+    font-weight: 300;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+
+    #hero { height: 100svh; }
+
+    .hero-content { padding: 0 1.5rem; }
+
+    h1 { font-size: 2.8rem; }
+
+    section { padding: 5rem 1.5rem; }
+
+    .services-header { flex-direction: column; align-items: flex-start; }
+
+    .services-grid { grid-template-columns: 1fr; }
+
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .stat-cell { padding: 2rem 1.5rem; }
+    .stat-cell:nth-child(2) { border-right: none; }
+    .stat-cell:nth-child(3) { border-right: 1px solid var(--border); border-top: 1px solid var(--border); }
+    .stat-cell:nth-child(4) { border-right: none; border-top: 1px solid var(--border); }
+
+    .tech-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .tech-visual { position: static; }
+
+    .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+
+    .form-row { grid-template-columns: 1fr; }
+
+    .footer-top { grid-template-columns: 1fr; gap: 2.5rem; }
+
+    .footer-bottom { flex-direction: column; text-align: center; }
+
+    .quote-wrap { padding: 4rem 1.5rem; }
+  }
 </style>
-
 </head>
 <body>
 
-<div id="cursor"></div>
-
 <!-- NAV -->
-
-<nav id="nav">
-  <a href="#" class="nav-logo">3D<span>Virtuals</span></a>
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">3D<span>Virtuals</span></a>
   <ul class="nav-links">
-    <li><a href="#services" data-i18n="nav.services">Services</a></li>
-    <li><a href="#technology" data-i18n="nav.technology">Technologie</a></li>
-    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+    <li><a href="#services" data-fr="Services" data-en="Services">Services</a></li>
+    <li><a href="#technology" data-fr="Technologie" data-en="Technology">Technologie</a></li>
+    <li><a href="#contact" data-fr="Contact" data-en="Contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <div class="lang-toggle" role="group" aria-label="Language">
-      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
-      <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
-    </div>
-    <a href="#contact" class="nav-cta" data-i18n="nav.cta">Obtenir un devis</a>
+    <button class="lang-toggle" id="lang-btn" onclick="toggleLang()" aria-label="Switch language">
+      <span id="lang-label">EN</span>
+    </button>
+    <a href="#contact" class="btn-primary" data-fr="Obtenir un devis" data-en="Get a Quote">Obtenir un devis</a>
   </div>
 </nav>
 
 <!-- HERO -->
-
 <section id="hero">
-  <div class="grid-lines" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span><span></span>
-  </div>
-  <div class="orb orb-1" aria-hidden="true"></div>
-  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="hero-bg-fallback"></div>
 
-  <p class="hero-eyebrow" data-i18n="hero.eyebrow">Technologie Immobilière — Montréal</p>
-  <h1 class="hero-headline" data-i18n="hero.headline">Visitez chaque pièce <em>avant</em><br>d'arriver.</h1>
-  <div class="hero-sub-row">
-    <p class="hero-sub" data-i18n="hero.sub">Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.</p>
-    <div class="hero-actions">
-      <a href="#services" class="btn-primary" data-i18n="hero.cta1">Explorer nos services →</a>
-      <a href="#contact" class="btn-ghost" data-i18n="hero.cta2">Obtenir un devis</a>
-    </div>
-  </div>
+  <!-- Replace src with your actual video path, e.g. /images/banner-video.mp4 -->
+  <video
+    class="hero-video"
+    autoplay
+    loop
+    muted
+    playsinline
+    poster="images/hero-poster.jpg"
+    aria-hidden="true"
+  >
+    <source src="images/banner.mp4" type="video/mp4">
+  </video>
 
-  <div class="marquee-wrap" aria-hidden="true">
-    <div class="marquee-track" id="marquee-track">
-      <span>8K Matterport</span><span class="marquee-dot">✦</span>
-      <span>Jumeaux Numériques</span><span class="marquee-dot">✦</span>
-      <span>Plans d'étage</span><span class="marquee-dot">✦</span>
-      <span>Google Street View</span><span class="marquee-dot">✦</span>
-      <span>Confidentialité IA</span><span class="marquee-dot">✦</span>
-      <span>Vue Dollhouse 3D</span><span class="marquee-dot">✦</span>
-      <span>Insta360 X5</span><span class="marquee-dot">✦</span>
-      <span>8K Matterport</span><span class="marquee-dot">✦</span>
-      <span>Jumeaux Numériques</span><span class="marquee-dot">✦</span>
-      <span>Plans d'étage</span><span class="marquee-dot">✦</span>
-      <span>Google Street View</span><span class="marquee-dot">✦</span>
-      <span>Confidentialité IA</span><span class="marquee-dot">✦</span>
-      <span>Vue Dollhouse 3D</span><span class="marquee-dot">✦</span>
-      <span>Insta360 X5</span><span class="marquee-dot">✦</span>
+  <div class="hero-grid"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow" data-fr="Technologie Immobilière — Montréal" data-en="Real Estate Technology — Montréal">Technologie Immobilière — Montréal</div>
+    <h1 data-fr="Visitez chaque<br>pièce <em>avant</em><br>d'arriver." data-en="Visit every<br>room <em>before</em><br>you arrive.">Visitez chaque<br>pièce <em>avant</em><br>d'arriver.</h1>
+    <p class="hero-sub" data-fr="Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment." data-en="8K Matterport virtual tours and professional digital twins for Montreal real estate brokers. Sell faster. Present smarter.">Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.</p>
+    <div class="hero-ctas">
+      <a href="#services" class="btn-hero-primary" data-fr="Explorer nos services →" data-en="Explore our services →">Explorer nos services →</a>
+      <a href="#contact" class="btn-glass" data-fr="Obtenir un devis" data-en="Get a Quote">Obtenir un devis</a>
     </div>
   </div>
 </section>
 
-<!-- STATS -->
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">8K Matterport</span>
+    <span class="ticker-item">Jumeaux Numériques</span>
+    <span class="ticker-item">Plans d'étage</span>
+    <span class="ticker-item">Google Street View</span>
+    <span class="ticker-item">Confidentialité IA</span>
+    <span class="ticker-item">Vue Dollhouse 3D</span>
+    <span class="ticker-item">Insta360 X5</span>
+    <span class="ticker-item">8K Matterport</span>
+    <span class="ticker-item">Jumeaux Numériques</span>
+    <span class="ticker-item">Plans d'étage</span>
+    <span class="ticker-item">Google Street View</span>
+    <span class="ticker-item">Confidentialité IA</span>
+    <span class="ticker-item">Vue Dollhouse 3D</span>
+    <span class="ticker-item">Insta360 X5</span>
+  </div>
+</div>
 
-<div id="stats" role="region" aria-label="Key statistics">
-  <div class="stat-item reveal"><div class="stat-num">8K</div><div class="stat-label" data-i18n="stats.res">Résolution Matterport</div></div>
-  <div class="stat-item reveal"><div class="stat-num">99%</div><div class="stat-label" data-i18n="stats.acc">Précision des plans</div></div>
-  <div class="stat-item reveal"><div class="stat-num">360°</div><div class="stat-label" data-i18n="stats.cov">Couverture immersive</div></div>
-  <div class="stat-item reveal"><div class="stat-num">MTL</div><div class="stat-label" data-i18n="stats.loc">Équipe basée à Montréal</div></div>
+<!-- STATS BAR -->
+<div class="stats-bar reveal">
+  <div class="stat-cell">
+    <div class="stat-num">8<span>K</span></div>
+    <div class="stat-label" data-fr="Résolution Matterport" data-en="Matterport Resolution">Résolution Matterport</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">99<span>%</span></div>
+    <div class="stat-label" data-fr="Précision des plans" data-en="Floor Plan Accuracy">Précision des plans</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">360<span>°</span></div>
+    <div class="stat-label" data-fr="Couverture immersive" data-en="Immersive Coverage">Couverture immersive</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num"><span>MTL</span></div>
+    <div class="stat-label" data-fr="Équipe basée à Montréal" data-en="Montreal-Based Team">Équipe basée à Montréal</div>
+  </div>
 </div>
 
 <!-- SERVICES -->
-
 <section id="services">
-  <p class="section-label reveal" data-i18n="svc.label">Ce que nous faisons</p>
-  <h2 class="section-h2 reveal" data-i18n="svc.h2">Quatre façons de<br>valoriser vos espaces.</h2>
-  <div class="services-grid">
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc1.num">01 / Résidentiel</div></div>
-      <div>
-        <div class="svc-icon">🏠</div>
-        <div class="svc-title" data-i18n="svc1.title">Visites Virtuelles<br>Résidentielles</div>
-        <p class="svc-body" data-i18n="svc1.body">Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.</p>
-      </div>
-      <div class="svc-arrow">↗</div>
+  <div class="services-header reveal">
+    <div>
+      <p class="eyebrow" data-fr="Ce que nous faisons" data-en="What we do">Ce que nous faisons</p>
+      <h2 data-fr="Quatre façons de<br>valoriser vos <em>espaces.</em>" data-en="Four ways to<br>showcase your <em>spaces.</em>">Quatre façons de<br>valoriser vos <em>espaces.</em></h2>
     </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc2.num">02 / Commercial</div></div>
-      <div>
-        <div class="svc-icon">🏢</div>
-        <div class="svc-title" data-i18n="svc2.title">Jumeaux Numériques<br>Commerciaux</div>
-        <p class="svc-body" data-i18n="svc2.body">Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.</p>
-      </div>
-      <div class="svc-arrow">↗</div>
-    </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc3.num">03 / Plans</div></div>
-      <div>
-        <div class="svc-icon">📐</div>
-        <div class="svc-title" data-i18n="svc3.title">Plans d'étage<br>Schématiques</div>
-        <p class="svc-body" data-i18n="svc3.body">Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.</p>
-      </div>
-      <div class="svc-arrow">↗</div>
-    </div>
-    <div class="svc-card reveal">
-      <div><div class="svc-number" data-i18n="svc4.num">04 / Découverte</div></div>
-      <div>
-        <div class="svc-icon">🗺️</div>
-        <div class="svc-title" data-i18n="svc4.title">Intégration Google<br>Street View</div>
-        <p class="svc-body" data-i18n="svc4.body">Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.</p>
-      </div>
-      <div class="svc-arrow">↗</div>
-    </div>
+    <p class="subtext" data-fr="Des solutions immersives sur mesure pour les courtiers, gestionnaires et architectes exigeants de Montréal." data-en="Tailor-made immersive solutions for Montreal's most demanding brokers, managers, and architects.">Des solutions immersives sur mesure pour les courtiers, gestionnaires et architectes exigeants de Montréal.</p>
+  </div>
+
+  <div class="services-grid reveal">
+    <a href="#contact" class="service-card">
+      <span class="service-num" data-fr="01 / Résidentiel" data-en="01 / Residential">01 / Résidentiel</span>
+      <div class="service-icon">🏠</div>
+      <h3 data-fr="Visites Virtuelles Résidentielles" data-en="Residential Virtual Tours">Visites Virtuelles Résidentielles</h3>
+      <p class="service-desc" data-fr="Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent." data-en="8K Matterport immersive tours for condos and houses. Captivate buyers with interactive floor plans and high-resolution imagery that sells.">Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.</p>
+      <span class="service-arrow">↗</span>
+    </a>
+
+    <a href="#contact" class="service-card">
+      <span class="service-num" data-fr="02 / Commercial" data-en="02 / Commercial">02 / Commercial</span>
+      <div class="service-icon">🏢</div>
+      <h3 data-fr="Jumeaux Numériques Commerciaux" data-en="Commercial Digital Twins">Jumeaux Numériques Commerciaux</h3>
+      <p class="service-desc" data-fr="Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision." data-en="Enterprise-grade 3D documentation for retail, offices, and common areas. Designed for managers who demand precision.">Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.</p>
+      <span class="service-arrow">↗</span>
+    </a>
+
+    <a href="#contact" class="service-card">
+      <span class="service-num" data-fr="03 / Plans" data-en="03 / Floor Plans">03 / Plans</span>
+      <div class="service-icon">📐</div>
+      <h3 data-fr="Plans d'étage Schématiques" data-en="Schematic Floor Plans">Plans d'étage Schématiques</h3>
+      <p class="service-desc" data-fr="Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel." data-en="99% accurate plans generated by AI from 3D data. Professional architectural documentation, no manual drawing required.">Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.</p>
+      <span class="service-arrow">↗</span>
+    </a>
+
+    <a href="#contact" class="service-card">
+      <span class="service-num" data-fr="04 / Découverte" data-en="04 / Discovery">04 / Découverte</span>
+      <div class="service-icon">🗺️</div>
+      <h3 data-fr="Intégration Google Street View" data-en="Google Street View Integration">Intégration Google Street View</h3>
+      <p class="service-desc" data-fr="Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche." data-en="One-click publishing to Google Maps. Boost your local SEO — your tours appear directly in Google Maps and search results.">Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.</p>
+      <span class="service-arrow">↗</span>
+    </a>
   </div>
 </section>
 
-<!-- TECHNOLOGY -->
+<!-- TECH -->
+<div class="tech-wrap" id="technology">
+  <div class="tech-inner">
+    <p class="eyebrow reveal" data-fr="La Technologie" data-en="The Technology">La Technologie</p>
+    <h2 class="reveal" data-fr="Alimenté par un matériel<br><em>d'exception.</em>" data-en="Powered by<br><em>exceptional</em> hardware.">Alimenté par un matériel<br><em>d'exception.</em></h2>
 
-<section id="technology">
-  <p class="section-label reveal" data-i18n="tech.label">La Technologie</p>
-  <h2 class="section-h2 reveal tech-intro" data-i18n="tech.h2">Alimenté par un<br>matériel<br>d'exception.</h2>
-  <div class="tech-cards-stack">
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech1.num">Fonctionnalité 01</div>
-        <h3 class="tech-card-title" data-i18n="tech1.title">Résolution 8K<br>Cristalline</h3>
-        <p class="tech-card-body" data-i18n="tech1.body">Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle pour une expérience vraiment immersive.</p>
+    <div class="tech-layout">
+      <div class="tech-features">
+        <div class="tech-feat reveal">
+          <div class="tech-feat-icon">🔭</div>
+          <div>
+            <div class="tech-feat-title" data-fr="Résolution 8K Cristalline" data-en="Crystal-Clear 8K Resolution">Résolution 8K Cristalline</div>
+            <p class="tech-feat-desc" data-fr="Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle." data-en="8K Matterport digital twins deliver unmatched clarity. Every angle, texture, and feature is captured with professional precision.">Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle.</p>
+          </div>
+        </div>
+
+        <div class="tech-feat reveal">
+          <div class="tech-feat-icon">🛡️</div>
+          <div>
+            <div class="tech-feat-title" data-fr="Bouclier de Confidentialité IA" data-en="AI Privacy Shield">Bouclier de Confidentialité IA</div>
+            <p class="tech-feat-desc" data-fr="La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement." data-en="Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging, built right in.">La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.</p>
+          </div>
+        </div>
+
+        <div class="tech-feat reveal">
+          <div class="tech-feat-icon">🏘️</div>
+          <div>
+            <div class="tech-feat-title" data-fr="Vue Dollhouse en 3D" data-en="3D Dollhouse View">Vue Dollhouse en 3D</div>
+            <p class="tech-feat-desc" data-fr="La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales." data-en="The interactive dollhouse perspective lets you explore properties from an aerial view. Instantly understand spatial relationships.">La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales.</p>
+          </div>
+        </div>
+
+        <div class="tech-feat reveal">
+          <div class="tech-feat-icon">📷</div>
+          <div>
+            <div class="tech-feat-title" data-fr="Matériel Insta360 X5" data-en="Insta360 X5 Hardware">Matériel Insta360 X5</div>
+            <p class="tech-feat-desc" data-fr="L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais." data-en="The professional Insta360 X5 captures perfect spherical images. Combined with the Matterport engine, it delivers unrivalled quality in the Montreal market.">L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.</p>
+          </div>
+        </div>
       </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🔭</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
-    </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech2.num">Fonctionnalité 02</div>
-        <h3 class="tech-card-title" data-i18n="tech2.title">Bouclier de<br>Confidentialité IA</h3>
-        <p class="tech-card-body" data-i18n="tech2.body">La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🛡️</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
-    </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech3.num">Fonctionnalité 03</div>
-        <h3 class="tech-card-title" data-i18n="tech3.title">Vue Dollhouse<br>en 3D</h3>
-        <p class="tech-card-body" data-i18n="tech3.body">La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales — un avantage pour captiver les acheteurs.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">🏘️</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
-      </div>
-    </div>
-    <div class="tech-card reveal">
-      <div>
-        <div class="tech-card-num" data-i18n="tech4.num">Fonctionnalité 04</div>
-        <h3 class="tech-card-title" data-i18n="tech4.title">Matériel<br>Insta360 X5</h3>
-        <p class="tech-card-body" data-i18n="tech4.body">L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.</p>
-      </div>
-      <div class="tech-card-visual">
-        <span style="position:relative;z-index:1;">📷</span>
-        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
+
+      <div class="tech-visual reveal">
+        <div class="tech-card">
+          <span class="tech-card-glyph">🔭</span>
+          <h3 class="tech-card-title">Matterport Pro3</h3>
+          <p class="tech-card-desc" data-fr="Notre caméra phare capture chaque pièce avec une précision millimétrique en résolution 8K. Une seule session suffit pour générer une visite complète, un jumeau numérique et un plan d'étage." data-en="Our flagship camera captures every room with millimeter precision in 8K resolution. A single session generates a complete tour, a digital twin, and a floor plan.">Notre caméra phare capture chaque pièce avec une précision millimétrique en résolution 8K. Une seule session suffit pour générer une visite complète, un jumeau numérique et un plan d'étage.</p>
+          <div class="tech-badges">
+            <span class="badge">8K HDR</span>
+            <span class="badge">LiDAR</span>
+            <span class="badge">AI Privacy</span>
+            <span class="badge">Dollhouse 3D</span>
+            <span class="badge">Floor Plans</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- QUOTE -->
-
-<section id="quote">
-  <p class="quote-text reveal" data-i18n="quote.text">« Chaque propriété mérite d'être vécue, pas seulement décrite. »</p>
-  <p class="quote-attr reveal" data-i18n="quote.attr">3D Virtuals — Studio Immobilier Immersif de Montréal</p>
-</section>
+<div class="quote-wrap reveal">
+  <p class="quote-text" data-fr="« Chaque propriété mérite d'être <em>vécue</em>, pas seulement décrite. »" data-en="&ldquo;Every property deserves to be <em>experienced</em>, not just described.&rdquo;">« Chaque propriété mérite d'être <em>vécue</em>, pas seulement décrite. »</p>
+  <p class="quote-attr" data-fr="3D Virtuals — Studio Immobilier Immersif de Montréal" data-en="3D Virtuals — Montreal's Immersive Real Estate Studio">3D Virtuals — Studio Immobilier Immersif de Montréal</p>
+</div>
 
 <!-- CONTACT -->
-
 <section id="contact">
-  <p class="section-label reveal" data-i18n="contact.label">Commencer</p>
-  <div class="contact-grid">
-    <div class="contact-left">
-      <h2 class="section-h2 reveal" data-i18n="contact.h2">Visitons<br>votre espace.</h2>
-      <p class="contact-desc reveal" data-i18n="contact.desc">Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.</p>
-      <div class="contact-info-row">
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">📍</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.addr_lbl">Adresse</div>
-            <div class="ci-value">6565 Kildare, Côte-Saint-Luc &amp; Montréal<br>Québec, Canada</div>
-          </div>
+  <div class="contact-layout">
+    <div class="contact-info reveal">
+      <p class="eyebrow" data-fr="Commencer" data-en="Get Started">Commencer</p>
+      <h2 data-fr="Visitons votre <em>espace.</em>" data-en="Let's visit your <em>space.</em>">Visitons votre <em>espace.</em></h2>
+      <p style="font-size:0.95rem;color:var(--slate);font-weight:300;line-height:1.7;margin-top:1rem;margin-bottom:0;"
+         data-fr="Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs."
+         data-en="Request a quote and one of our specialists will contact you within 24 hours. No GST / QST charged for small suppliers.">Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.</p>
+
+      <div class="contact-detail">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label" data-fr="Adresse" data-en="Address">Adresse</div>
+          <div class="contact-val">6565 Kildare, Côte-Saint-Luc &amp; Montréal<br>Québec, Canada</div>
         </div>
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">📞</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.phone_lbl">Téléphone</div>
-            <a href="tel:+15149191875" class="ci-value">(514) 919-1875</a>
-          </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-icon">📞</div>
+        <div>
+          <div class="contact-label" data-fr="Téléphone" data-en="Phone">Téléphone</div>
+          <div class="contact-val"><a href="tel:+15149191875">(514) 919-1875</a></div>
         </div>
-        <div class="contact-info-item reveal">
-          <div class="ci-icon">✉️</div>
-          <div>
-            <div class="ci-label" data-i18n="contact.email_lbl">Courriel</div>
-            <a href="mailto: info@3dvirtual.space" class="ci-value"> info@3dvirtual.space</a>
-          </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-icon">✉️</div>
+        <div>
+          <div class="contact-label" data-fr="Courriel" data-en="Email">Courriel</div>
+          <div class="contact-val"><a href="mailto:info@3dvirtual.space">info@3dvirtual.space</a></div>
         </div>
       </div>
     </div>
-    <div class="quote-form reveal">
-      <div class="form-title" data-i18n="form.title">Demande de devis</div>
-      <div class="form-group">
-        <label class="form-label" for="f-name" data-i18n="form.name_lbl">Nom complet</label>
-        <input class="form-input" type="text" id="f-name" placeholder="Jean Tremblay" data-i18n-ph="form.name_ph" autocomplete="name" />
-        <span class="field-error" id="err-name" data-i18n-err="form.err_name">Ce champ est obligatoire.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="f-email" data-i18n="form.email_lbl">Adresse courriel</label>
-        <input class="form-input" type="email" id="f-email" placeholder="jean@immobilier.com" data-i18n-ph="form.email_ph" autocomplete="email" />
-        <span class="field-error" id="err-email" data-i18n-err="form.err_email">Adresse courriel invalide.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="f-phone" data-i18n="form.phone_lbl">Numéro de téléphone</label>
-        <input class="form-input" type="tel" id="f-phone" placeholder="(514) 000-0000" autocomplete="tel" maxlength="15" inputmode="numeric" />
-        <span class="field-error" id="err-phone" data-i18n-err="form.err_phone">Ce champ est obligatoire.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="f-sqft" data-i18n="form.sqft_lbl">Superficie (pi²)</label>
-        <input class="form-input" type="text" id="f-sqft" placeholder="ex. 1200" inputmode="numeric" pattern="[0-9]*" data-i18n-ph="form.sqft_ph" autocomplete="off" />
-        <span class="field-error" id="err-sqft" data-i18n-err="form.err_sqft">Veuillez entrer la superficie.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="f-address" data-i18n="form.addr_lbl">Adresse de la propriété</label>
-        <input class="form-input" type="text" id="f-address" placeholder="123 Rue Principale, Montréal" autocomplete="street-address" data-i18n-ph="form.addr_ph" />
-        <span class="field-error" id="err-address" data-i18n-err="form.err_addr">Ce champ est obligatoire.</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="f-service" data-i18n="form.service_lbl">Type de service</label>
-        <select class="form-select form-input" id="f-service">
-          <option value="" disabled selected data-i18n="form.service_ph">Choisir un service</option>
-          <option data-i18n="form.opt1">Visite résidentielle</option>
-          <option data-i18n="form.opt2">Jumeau numérique commercial</option>
-          <option data-i18n="form.opt3">Plan d'étage schématique</option>
-          <option data-i18n="form.opt4">Intégration Google Street View</option>
-        </select>
-        <span class="field-error" id="err-service" data-i18n-err="form.err_service">Veuillez choisir un service.</span>
-      </div>
-      <button class="form-submit" id="form-submit" data-i18n="form.submit">Envoyer la demande →</button>
-      <div class="form-success" id="form-success">
-        <span class="form-success-icon">✅</span>
-        <div class="form-success-text" id="form-success-text">Merci ! Votre demande a été envoyée.</div>
-        <div class="form-success-sub" id="form-success-sub">Notre équipe vous contactera dans les 24 heures.</div>
+
+    <div class="reveal">
+      <div class="form-card">
+        <div class="form-title" data-fr="Demande de devis" data-en="Quote Request">Demande de devis</div>
+
+        <div id="form-inner">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name" data-fr="Nom complet" data-en="Full Name">Nom complet</label>
+              <input type="text" id="name" data-placeholder-fr="Jean Tremblay" data-placeholder-en="John Smith" placeholder="Jean Tremblay" required>
+            </div>
+            <div class="form-group">
+              <label for="email" data-fr="Adresse courriel" data-en="Email Address">Adresse courriel</label>
+              <input type="email" id="email" data-placeholder-fr="jean@exemple.com" data-placeholder-en="john@example.com" placeholder="jean@exemple.com" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone" data-fr="Numéro de téléphone" data-en="Phone Number">Numéro de téléphone</label>
+              <input type="tel" id="phone" placeholder="(514) 000-0000">
+            </div>
+            <div class="form-group">
+              <label for="sqft" data-fr="Superficie (pi²)" data-en="Area (sq ft)">Superficie (pi²)</label>
+              <input type="number" id="sqft" placeholder="1 200">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="address" data-fr="Adresse de la propriété" data-en="Property Address">Adresse de la propriété</label>
+            <input type="text" id="address" data-placeholder-fr="123 Rue Principale, Montréal, QC" data-placeholder-en="123 Main Street, Montreal, QC" placeholder="123 Rue Principale, Montréal, QC">
+          </div>
+          <div class="form-group">
+            <label for="service" data-fr="Type de service" data-en="Service Type">Type de service</label>
+            <select id="service" required>
+              <option value="" disabled selected data-fr="Choisir un service" data-en="Choose a service">Choisir un service</option>
+              <option data-fr="Visite résidentielle" data-en="Residential Tour">Visite résidentielle</option>
+              <option data-fr="Jumeau numérique commercial" data-en="Commercial Digital Twin">Jumeau numérique commercial</option>
+              <option data-fr="Plan d'étage schématique" data-en="Schematic Floor Plan">Plan d'étage schématique</option>
+              <option data-fr="Intégration Google Street View" data-en="Google Street View Integration">Intégration Google Street View</option>
+            </select>
+          </div>
+          <button class="form-submit" onclick="submitForm()" data-fr="Envoyer la demande →" data-en="Send Request →">Envoyer la demande →</button>
+          <p class="form-note" data-fr="Réponse garantie en 24 heures · Aucune TPS / TVQ" data-en="Response guaranteed within 24 hours · No GST / QST">Réponse garantie en 24 heures · Aucune TPS / TVQ</p>
+        </div>
+
+        <div class="form-success" id="form-success">
+          <div class="success-icon">✅</div>
+          <div class="success-title" data-fr="Merci pour votre demande !" data-en="Thank you for your request!">Merci pour votre demande !</div>
+          <p class="success-desc" data-fr="Notre équipe vous contactera dans les 24 heures." data-en="Our team will contact you within 24 hours.">Notre équipe vous contactera dans les 24 heures.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
-
 <footer>
   <div class="footer-top">
-    <div>
-      <div class="footer-brand-name">3D<span>Virtuals</span></div>
-      <p class="footer-desc" data-i18n="footer.desc">Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.</p>
+    <div class="footer-brand">
+      <div class="footer-logo">3D<span>Virtuals</span></div>
+      <p class="footer-tagline" data-fr="Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K." data-en="Professional 3D virtual tours and digital twins for Montreal real estate. Serving brokers with 8K Matterport imaging.">Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.</p>
+      <a href="#contact" class="btn-primary" style="font-size:0.72rem;padding:0.55rem 1.25rem;" data-fr="Obtenir un devis" data-en="Get a Quote">Obtenir un devis</a>
     </div>
+
     <div>
-      <div class="footer-col-title" data-i18n="footer.nav_title">Navigation</div>
+      <div class="footer-heading" data-fr="Navigation" data-en="Navigation">Navigation</div>
       <ul class="footer-links">
-        <li><a href="#hero" data-i18n="footer.nav1">Accueil</a></li>
-        <li><a href="#services" data-i18n="footer.nav2">Nos services</a></li>
-        <li><a href="#technology" data-i18n="footer.nav3">Technologie</a></li>
-        <li><a href="#contact" data-i18n="footer.nav4">Nous joindre</a></li>
+        <li><a href="#hero" data-fr="Accueil" data-en="Home">Accueil</a></li>
+        <li><a href="#services" data-fr="Nos services" data-en="Our Services">Nos services</a></li>
+        <li><a href="#technology" data-fr="Technologie" data-en="Technology">Technologie</a></li>
+        <li><a href="#contact" data-fr="Nous joindre" data-en="Contact Us">Nous joindre</a></li>
       </ul>
     </div>
+
     <div>
-      <div class="footer-col-title" data-i18n="footer.svc_title">Services</div>
+      <div class="footer-heading" data-fr="Services" data-en="Services">Services</div>
       <ul class="footer-links">
-        <li><a href="#services" data-i18n="footer.svc1">Visites résidentielles</a></li>
-        <li><a href="#services" data-i18n="footer.svc2">Jumeaux numériques</a></li>
-        <li><a href="#services" data-i18n="footer.svc3">Plans d'étage</a></li>
-        <li><a href="#services" data-i18n="footer.svc4">Google Street View</a></li>
+        <li><a href="#services" data-fr="Visites résidentielles" data-en="Residential Tours">Visites résidentielles</a></li>
+        <li><a href="#services" data-fr="Jumeaux numériques" data-en="Digital Twins">Jumeaux numériques</a></li>
+        <li><a href="#services" data-fr="Plans d'étage" data-en="Floor Plans">Plans d'étage</a></li>
+        <li><a href="#services" data-fr="Google Street View" data-en="Google Street View">Google Street View</a></li>
       </ul>
     </div>
   </div>
+
   <div class="footer-bottom">
-    <span data-i18n="footer.copy">© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.</span>
-    <span data-i18n="footer.tax">Aucune TPS / TVQ perçue — petit fournisseur</span>
+    <p class="footer-copy" data-fr="© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal." data-en="© 2025 3D Virtuals. All rights reserved. Proudly based in Montreal.">© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.</p>
+    <p class="footer-legal" data-fr="Aucune TPS / TVQ perçue — petit fournisseur" data-en="No GST / QST charged — small supplier">Aucune TPS / TVQ perçue — petit fournisseur</p>
   </div>
 </footer>
 
-<!-- ============================================================
-     JAVASCRIPT — zero external dependencies, no CDN
-     ============================================================ -->
-
 <script>
-(function() {
-"use strict";
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* ── Translations ── */
-var T = {
-  fr: {
-    "nav.services":"Services","nav.technology":"Technologie","nav.contact":"Contact","nav.cta":"Obtenir un devis",
-    "hero.eyebrow":"Technologie Immobilière — Montréal",
-    "hero.headline":"Visitez chaque pièce <em>avant</em><br>d'arriver.",
-    "hero.sub":"Visites virtuelles 8K Matterport et jumeaux numériques professionnels pour les courtiers immobiliers de Montréal. Vendez plus vite. Présentez plus intelligemment.",
-    "hero.cta1":"Explorer nos services →","hero.cta2":"Obtenir un devis",
-    "stats.res":"Résolution Matterport","stats.acc":"Précision des plans","stats.cov":"Couverture immersive","stats.loc":"Équipe basée à Montréal",
-    "svc.label":"Ce que nous faisons","svc.h2":"Quatre façons de<br>valoriser vos espaces.",
-    "svc1.num":"01 / Résidentiel","svc1.title":"Visites Virtuelles<br>Résidentielles","svc1.body":"Visites immersives 8K Matterport pour condos et maisons. Captivez les acheteurs avec des plans interactifs et des images haute résolution qui vendent.",
-    "svc2.num":"02 / Commercial","svc2.title":"Jumeaux Numériques<br>Commerciaux","svc2.body":"Documentation 3D de qualité entreprise pour commerces, bureaux et espaces communs. Conçu pour les gestionnaires qui exigent la précision.",
-    "svc3.num":"03 / Plans","svc3.title":"Plans d'étage<br>Schématiques","svc3.body":"Plans précis à 99 %, générés par IA à partir des données 3D. Documentation architecturale professionnelle, sans dessin manuel.",
-    "svc4.num":"04 / Découverte","svc4.title":"Intégration Google<br>Street View","svc4.body":"Publication en un clic sur Google Maps. Améliorez votre référencement local — vos visites apparaissent directement dans Google Maps et la recherche.",
-    "tech.label":"La Technologie","tech.h2":"Alimenté par un<br>matériel<br>d'exception.",
-    "tech1.num":"Fonctionnalité 01","tech1.title":"Résolution 8K<br>Cristalline","tech1.body":"Les jumeaux numériques Matterport en 8K offrent une clarté incomparable. Chaque angle, texture et caractéristique est capturé avec une précision professionnelle pour une expérience vraiment immersive.",
-    "tech2.num":"Fonctionnalité 02","tech2.title":"Bouclier de<br>Confidentialité IA","tech2.body":"La technologie avancée de floutage des visages protège automatiquement la vie privée des occupants. Une imagerie conforme au RGPD, intégrée nativement.",
-    "tech3.num":"Fonctionnalité 03","tech3.title":"Vue Dollhouse<br>en 3D","tech3.body":"La perspective dollhouse interactive permet d'explorer les propriétés depuis une vue aérienne. Comprenez instantanément les relations spatiales — un avantage pour captiver les acheteurs.",
-    "tech4.num":"Fonctionnalité 04","tech4.title":"Matériel<br>Insta360 X5","tech4.body":"L'Insta360 X5 professionnel capture des images sphériques parfaites. Combiné au moteur Matterport, il offre une qualité inégalée sur le marché montréalais.",
-    "quote.text":"« Chaque propriété mérite d'être vécue, pas seulement décrite. »","quote.attr":"3D Virtuals — Studio Immobilier Immersif de Montréal",
-    "contact.label":"Commencer","contact.h2":"Visitons<br>votre espace.","contact.desc":"Demandez un devis et l'un de nos spécialistes vous contactera dans les 24 heures. Aucune TPS / TVQ perçue pour les petits fournisseurs.",
-    "contact.addr_lbl":"Adresse","contact.phone_lbl":"Téléphone","contact.email_lbl":"Courriel",
-    "form.title":"Demande de devis","form.name_lbl":"Nom complet","form.name_ph":"Jean Tremblay","form.email_lbl":"Adresse courriel","form.email_ph":"jean@immobilier.com","form.phone_lbl":"Numéro de téléphone","form.service_lbl":"Type de service","form.service_ph":"Choisir un service","form.opt1":"Visite résidentielle","form.opt2":"Jumeau numérique commercial","form.opt3":"Plan d'étage schématique","form.opt4":"Intégration Google Street View","form.submit":"Envoyer la demande →","form.sending":"Envoi en cours…","form.done":"✓ Demande envoyée",
-    "footer.desc":"Visites virtuelles 3D professionnelles et jumeaux numériques pour l'immobilier montréalais. Au service des courtiers avec l'imagerie Matterport 8K.","footer.nav_title":"Navigation","footer.nav1":"Accueil","footer.nav2":"Nos services","footer.nav3":"Technologie","footer.nav4":"Nous joindre","footer.svc_title":"Services","footer.svc1":"Visites résidentielles","footer.svc2":"Jumeaux numériques","footer.svc3":"Plans d'étage","footer.svc4":"Google Street View","footer.copy":"© 2025 3D Virtuals. Tous droits réservés. Fièrement basé à Montréal.","footer.tax":"Aucune TPS / TVQ perçue — petit fournisseur","form.err_name":"Ce champ est obligatoire.","form.err_email":"Adresse courriel invalide.","form.err_phone":"Veuillez entrer un numéro à 10 chiffres.","form.err_service":"Veuillez choisir un service.","form.sqft_lbl":"Superficie (pi²)","form.sqft_ph":"ex. 1200","form.err_sqft":"Veuillez entrer la superficie.","form.addr_lbl":"Adresse de la propriété","form.addr_ph":"123 Rue Principale, Montréal","form.err_addr":"Ce champ est obligatoire.","form.success_text":"Merci ! Votre demande a été envoyée.","form.success_sub":"Notre équipe vous contactera dans les 24 heures."
-  },
-  en: {
-    "nav.services":"Services","nav.technology":"Technology","nav.contact":"Contact","nav.cta":"Get a Quote",
-    "hero.eyebrow":"Montreal Real Estate Technology",
-    "hero.headline":"See every room <em>before</em><br>you arrive.",
-    "hero.sub":"Professional 8K Matterport virtual tours and digital twins for real estate professionals across Montreal. Sell faster. Show smarter.",
-    "hero.cta1":"Explore Services →","hero.cta2":"Get a Quote",
-    "stats.res":"Matterport Resolution","stats.acc":"Floor Plan Accuracy","stats.cov":"Immersive Coverage","stats.loc":"Montreal-Based Team",
-    "svc.label":"What We Do","svc.h2":"Four ways to<br>showcase space.",
-    "svc1.num":"01 / Residential","svc1.title":"Residential<br>Virtual Tours","svc1.body":"Immersive 8K Matterport walkthroughs for condos and houses. Engage potential buyers with interactive floor plans and high-resolution imagery that sells.",
-    "svc2.num":"02 / Commercial","svc2.title":"Commercial<br>Digital Twins","svc2.body":"Enterprise-grade 3D documentation for retail, office, and amenity spaces. Built for property managers and facility planners who demand precision.",
-    "svc3.num":"03 / Floor Plans","svc3.title":"Schematic<br>Floor Plans","svc3.body":"AI-powered 99% accurate black-and-white floor plans from 3D scan data. Architectural-grade documentation, zero drafting time.",
-    "svc4.num":"04 / Discovery","svc4.title":"Google Street<br>View Integration","svc4.body":"One-click publishing to Google Maps. Boost local SEO — your virtual tours appear directly in Google Maps and Search results.",
-    "tech.label":"The Technology","tech.h2":"Built on<br>extraordinary<br>hardware.",
-    "tech1.num":"Feature 01","tech1.title":"8K Crystal-<br>Clear Resolution","tech1.body":"Crystal-clear 8K Matterport digital twins provide unparalleled clarity and detail. Every corner, texture, and feature captured with professional-grade precision for a truly immersive viewing experience.",
-    "tech2.num":"Feature 02","tech2.title":"AI-Powered<br>Privacy Shield","tech2.body":"Advanced face-blurring technology automatically protects occupant privacy. GDPR-compliant imaging — built-in, not bolted-on.",
-    "tech3.num":"Feature 03","tech3.title":"Dollhouse<br>3D Viewing","tech3.body":"Interactive dollhouse perspective lets viewers explore properties from a bird's-eye view. Understand spatial relationships instantly — a competitive advantage for engaging buyers.",
-    "tech4.num":"Feature 04","tech4.title":"Insta360 X5<br>Hardware","tech4.body":"Professional-grade Insta360 X5 captures perfect spherical imagery. Combined with Matterport's processing engine, it delivers unmatched virtual tour quality in the Montreal market.",
-    "quote.text":"\"Every property deserves to be experienced, not just described.\"","quote.attr":"3D Virtuals — Montreal's Immersive Real Estate Studio",
-    "contact.label":"Get Started","contact.h2":"Let's tour<br>your space.","contact.desc":"Request a quote and one of our imaging specialists will reach out within 24 hours. No GST / QST collected for small supplier services.",
-    "contact.addr_lbl":"Address","contact.phone_lbl":"Phone","contact.email_lbl":"Email",
-    "form.title":"Request a Quote","form.name_lbl":"Full Name","form.name_ph":"Jane Smith","form.email_lbl":"Email Address","form.email_ph":"jane@realty.com","form.phone_lbl":"Phone Number","form.service_lbl":"Service Type","form.service_ph":"Select a service","form.opt1":"Residential Tour","form.opt2":"Commercial Digital Twin","form.opt3":"Schematic Floor Plan","form.opt4":"Google Street View Integration","form.submit":"Request Quote →","form.sending":"Sending…","form.done":"✓ Quote Requested",
-    "footer.desc":"Professional 3D virtual tours and digital twins for Montreal real estate. Serving realtors and property managers with 8K Matterport imaging.","footer.nav_title":"Navigation","footer.nav1":"Home","footer.nav2":"Our Services","footer.nav3":"Technology","footer.nav4":"Contact Us","footer.svc_title":"Services","footer.svc1":"Residential Tours","footer.svc2":"Commercial Digital Twins","footer.svc3":"Floor Plans","footer.svc4":"Google Street View","footer.copy":"© 2025 3D Virtuals. All rights reserved. Proudly serving Montreal.","footer.tax":"No GST / QST collected — small supplier","form.err_name":"This field is required.","form.err_email":"Invalid email address.","form.err_phone":"Please enter a valid 10-digit phone number.","form.err_service":"Please select a service.","form.sqft_lbl":"Square Footage (sq ft)","form.sqft_ph":"e.g. 1200","form.err_sqft":"Please enter the square footage.","form.addr_lbl":"Property Address","form.addr_ph":"123 Main St, Montreal","form.err_addr":"This field is required.","form.success_text":"Thank you! Your request has been sent.","form.success_sub":"Our team will reach out to you within 24 hours."
-  }
-};
-
-var currentLang = "fr";
-
-/* ── Language switcher ── */
-window.setLang = function(lang) {
-  currentLang = lang;
-  var dict = T[lang];
-  document.documentElement.lang = lang;
-  document.getElementById("btn-en").classList.toggle("active", lang === "en");
-  document.getElementById("btn-fr").classList.toggle("active", lang === "fr");
-  document.querySelectorAll("[data-i18n]").forEach(function(el) {
-    var key = el.getAttribute("data-i18n");
-    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  // ── Nav scroll tint ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').style.background =
+      window.scrollY > 60 ? 'rgba(10,10,15,0.9)' : 'rgba(10,10,15,0.6)';
   });
-  document.querySelectorAll("[data-i18n-ph]").forEach(function(el) {
-    var key = el.getAttribute("data-i18n-ph");
-    if (dict[key] !== undefined) el.placeholder = dict[key];
-  });
-  /* update error texts */
-  if (window._updateFormErrors) window._updateFormErrors(dict);
-  /* flash */
-  document.body.style.opacity = "0.88";
-  setTimeout(function(){ document.body.style.opacity = "1"; }, 60);
-};
 
-/* ── Scroll reveal (IntersectionObserver) ── */
-function initReveal() {
-  var els = document.querySelectorAll(".reveal");
-  if (!window.IntersectionObserver) {
-    els.forEach(function(el){ el.classList.add("in"); });
-    return;
+  // ── Form submit ──
+  function submitForm() {
+    if (!document.getElementById('name').value ||
+        !document.getElementById('email').value ||
+        !document.getElementById('service').value) return;
+    document.getElementById('form-inner').style.display = 'none';
+    document.getElementById('form-success').style.display = 'flex';
   }
-  var io = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+
+  // ── Language toggle ──
+  let currentLang = 'fr';
+
+  function toggleLang() {
+    currentLang = currentLang === 'fr' ? 'en' : 'fr';
+    applyLang(currentLang);
+  }
+
+  function applyLang(lang) {
+    const other = lang === 'fr' ? 'en' : 'fr';
+
+    // Update button label to show what you'll switch TO
+    document.getElementById('lang-label').textContent = other.toUpperCase();
+    document.documentElement.lang = lang;
+
+    // Translate all elements with data-fr / data-en
+    document.querySelectorAll('[data-fr]').forEach(el => {
+      const text = el.getAttribute('data-' + lang);
+      if (!text) return;
+
+      // Handle elements that allow inner HTML (h1, h2, p with <em>, quote)
+      const htmlTags = ['H1','H2','H3','P','DIV','SPAN','A','BUTTON'];
+      if (htmlTags.includes(el.tagName) && text.includes('<')) {
+        el.innerHTML = text;
+      } else {
+        el.textContent = text;
+      }
     });
-  }, { threshold: 0.1 });
-  els.forEach(function(el, i) {
-    el.style.transitionDelay = ((i % 5) * 0.08) + "s";
-    io.observe(el);
-  });
-}
 
-/* ── Nav shadow on scroll ── */
-function initNav() {
-  var nav = document.getElementById("nav");
-  window.addEventListener("scroll", function() {
-    if (window.scrollY > 60) nav.classList.add("scrolled");
-    else nav.classList.remove("scrolled");
-  }, { passive: true });
-}
+    // Translate select options (textContent only)
+    document.querySelectorAll('option[data-' + lang + ']').forEach(opt => {
+      opt.textContent = opt.getAttribute('data-' + lang);
+    });
 
-/* ── Custom cursor ── */
-function initCursor() {
-  var cursor = document.getElementById("cursor");
-  if (!cursor || !window.matchMedia("(pointer:fine)").matches) return;
-  document.addEventListener("mousemove", function(e) {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top  = e.clientY + "px";
-  });
-  document.querySelectorAll("a, button, .svc-card, .tech-card").forEach(function(el) {
-    el.addEventListener("mouseenter", function(){ cursor.classList.add("hov"); });
-    el.addEventListener("mouseleave", function(){ cursor.classList.remove("hov"); });
-  });
-}
-
-/* ── Form validation + feedback ── */
-function initForm() {
-  var btn = document.getElementById("form-submit");
-  if (!btn) return;
-
-  var fields = [
-    { id: "f-name",    errId: "err-name",    type: "text" },
-    { id: "f-email",   errId: "err-email",   type: "email" },
-    { id: "f-phone",   errId: "err-phone",   type: "text" },
-    { id: "f-sqft",    errId: "err-sqft",    type: "text" },
-    { id: "f-address", errId: "err-address", type: "text" },
-    { id: "f-service", errId: "err-service", type: "select" }
-  ];
-
-  /* Clear single field error on input */
-  fields.forEach(function(f) {
-    var el = document.getElementById(f.id);
-    if (!el) return;
-    el.addEventListener("input", function() { clearError(f.id, f.errId); });
-    el.addEventListener("change", function() { clearError(f.id, f.errId); });
-  });
-
-  /* Auto-format phone as (XXX) XXX-XXXX */
-  var phoneEl = document.getElementById("f-phone");
-  if (phoneEl) {
-    phoneEl.addEventListener("input", function() {
-      var digits = phoneEl.value.replace(/\D/g, "").slice(0, 10);
-      var fmt = "";
-      if (digits.length === 0) { fmt = ""; }
-      else if (digits.length <= 3) { fmt = "(" + digits; }
-      else if (digits.length <= 6) { fmt = "(" + digits.slice(0,3) + ") " + digits.slice(3); }
-      else { fmt = "(" + digits.slice(0,3) + ") " + digits.slice(3,6) + "-" + digits.slice(6); }
-      phoneEl.value = fmt;
+    // Translate input placeholders
+    document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
+      el.placeholder = el.getAttribute('data-placeholder-' + lang);
     });
   }
-
-  function clearError(fieldId, errId) {
-    var el = document.getElementById(fieldId);
-    var er = document.getElementById(errId);
-    if (el) el.classList.remove("error");
-    if (er) er.classList.remove("show");
-  }
-
-  function validateEmail(v) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-  }
-
-  function updateErrors(dict) {
-    /* Update error message text when language switches */
-    document.getElementById("err-name").textContent    = dict["form.err_name"]    || "This field is required.";
-    document.getElementById("err-email").textContent   = dict["form.err_email"]   || "Invalid email address.";
-    document.getElementById("err-phone").textContent   = dict["form.err_phone"]   || "Please enter a valid 10-digit phone number.";
-    document.getElementById("err-sqft").textContent    = dict["form.err_sqft"]    || "Please enter the square footage.";
-    document.getElementById("err-address").textContent  = dict["form.err_addr"]    || "This field is required.";
-    document.getElementById("err-service").textContent = dict["form.err_service"] || "Please select a service.";
-    /* Update success message text if visible */
-    var st = document.getElementById("form-success-text");
-    var ss = document.getElementById("form-success-sub");
-    if (st) st.textContent = dict["form.success_text"] || "Thank you! Your request has been sent.";
-    if (ss) ss.textContent = dict["form.success_sub"]  || "Our team will reach out to you within 24 hours.";
-  }
-
-  /* Expose so setLang can call it */
-  window._updateFormErrors = updateErrors;
-
-  btn.addEventListener("click", function() {
-    var dict = T[currentLang];
-    var valid = true;
-
-    /* Name */
-    var name = document.getElementById("f-name");
-    if (!name.value.trim()) {
-      name.classList.add("error");
-      document.getElementById("err-name").classList.add("show");
-      valid = false;
-    } else {
-      name.classList.remove("error");
-      document.getElementById("err-name").classList.remove("show");
-    }
-
-    /* Email */
-    var email = document.getElementById("f-email");
-    if (!email.value.trim() || !validateEmail(email.value)) {
-      email.classList.add("error");
-      document.getElementById("err-email").classList.add("show");
-      valid = false;
-    } else {
-      email.classList.remove("error");
-      document.getElementById("err-email").classList.remove("show");
-    }
-
-    /* Phone — must contain exactly 10 digits */
-    var phone = document.getElementById("f-phone");
-    var phoneDigits = phone.value.replace(/\D/g, "");
-    if (phoneDigits.length !== 10) {
-      phone.classList.add("error");
-      document.getElementById("err-phone").classList.add("show");
-      valid = false;
-    } else {
-      phone.classList.remove("error");
-      document.getElementById("err-phone").classList.remove("show");
-    }
-
-    /* Square feet */
-    var sqft = document.getElementById("f-sqft");
-    var sqftVal = sqft.value.trim().replace(/[^0-9]/g, "");
-    if (!sqftVal || parseInt(sqftVal, 10) < 1) {
-      sqft.classList.add("error");
-      document.getElementById("err-sqft").classList.add("show");
-      valid = false;
-    } else {
-      sqft.classList.remove("error");
-      document.getElementById("err-sqft").classList.remove("show");
-    }
-
-    /* Address */
-    var address = document.getElementById("f-address");
-    if (!address.value.trim()) {
-      address.classList.add("error");
-      document.getElementById("err-address").classList.add("show");
-      valid = false;
-    } else {
-      address.classList.remove("error");
-      document.getElementById("err-address").classList.remove("show");
-    }
-
-    /* Service */
-    var service = document.getElementById("f-service");
-    if (!service.value) {
-      service.classList.add("error");
-      document.getElementById("err-service").classList.add("show");
-      valid = false;
-    } else {
-      service.classList.remove("error");
-      document.getElementById("err-service").classList.remove("show");
-    }
-
-    if (!valid) {
-      /* Shake the button */
-      btn.classList.remove("form-shake");
-      void btn.offsetWidth; /* reflow to restart animation */
-      btn.classList.add("form-shake");
-      setTimeout(function(){ btn.classList.remove("form-shake"); }, 450);
-      /* Scroll first error into view */
-      var firstErr = document.querySelector(".form-input.error, .form-select.error");
-      if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-
-    /* All valid — submit to Formspree */
-    var successBox  = document.getElementById("form-success");
-    var successText = document.getElementById("form-success-text");
-    var successSub  = document.getElementById("form-success-sub");
-    successBox.classList.remove("show");
-
-    btn.textContent = dict["form.sending"];
-    btn.style.background = "#12a354";
-    btn.disabled = true;
-
-    var formData = new FormData();
-    formData.append("name", name.value.trim());
-    formData.append("email", email.value.trim());
-    formData.append("phone", phone.value.trim());
-    formData.append("sqft", sqft.value.trim());
-    formData.append("address", address.value.trim());
-    formData.append("service", service.options[service.selectedIndex].text);
-
-    fetch("https://formspree.io/f/mnjoogqg", {
-      method: "POST",
-      body: formData,
-      headers: { "Accept": "application/json" }
-    }).then(function(response) {
-      if (!response.ok) throw new Error("Form submission failed");
-      btn.textContent = dict["form.done"];
-      successText.textContent = dict["form.success_text"] || "Thank you! Your request has been sent.";
-      successSub.textContent  = dict["form.success_sub"]  || "Our team will reach out to you within 24 hours.";
-      successBox.classList.add("show");
-      setTimeout(function() {
-        btn.innerHTML = dict["form.submit"];
-        btn.style.background = "";
-        btn.disabled = false;
-        name.value = "";
-        email.value = "";
-        phone.value = "";
-        sqft.value = "";
-        address.value = "";
-        service.selectedIndex = 0;
-        setTimeout(function(){ successBox.classList.remove("show"); }, 6000);
-      }, 2500);
-    }).catch(function() {
-      btn.textContent = dict["form.submit"];
-      btn.style.background = "";
-      btn.disabled = false;
-      alert(currentLang === "fr" ? "Erreur lors de l'envoi. Veuillez réessayer." : "Submission failed. Please try again.");
-    });
-  });
-}
-
-/* ── Body transition for lang flash ─- */
-document.body.style.transition = "opacity .25s";
-
-/* ── Boot ── */
-document.addEventListener("DOMContentLoaded", function() {
-  setLang("fr");
-  initReveal();
-  initNav();
-  initCursor();
-  initForm();
-});
-
-})();
 </script>
-
 </body>
 </html>
